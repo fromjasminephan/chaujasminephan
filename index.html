@@ -54,15 +54,13 @@ section{padding:clamp(3rem,8vw,6rem) clamp(1.5rem,6vw,5rem);}
 .btn-outline{background:transparent;color:var(--ink);border:1px solid var(--ink-mid);}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
 
-/* HERO STATS */
+/* HERO SKILL CARDS */
 .hero-visual{display:flex;flex-direction:column;gap:1rem;}
-.stat-card{background:white;border:1px solid var(--rule);border-radius:8px;padding:1.1rem 1.3rem;display:flex;align-items:center;gap:1.1rem;transition:transform 0.2s;}
-.stat-card:hover{transform:translateX(4px);}
-.stat-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
-.ic-teal{background:var(--teal-light);}
-.ic-coral{background:var(--accent-light);}
-.stat-label{font-size:0.72rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.08em;}
-.stat-value{font-size:1rem;font-weight:500;margin-top:0.1rem;}
+.hero-skill-card{background:white;border:1px solid var(--rule);border-radius:16px;padding:1.4rem 1.6rem;box-shadow:0 2px 12px rgba(26,24,20,0.05);transition:transform 0.2s,box-shadow 0.2s;}
+.hero-skill-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,24,20,0.08);}
+.hero-skill-icon{margin-bottom:0.75rem;color:var(--ink-mid);}
+.hero-skill-card h4{font-weight:600;font-size:1rem;margin-bottom:0.3rem;color:var(--ink);}
+.hero-skill-card p{font-size:0.85rem;color:var(--ink-light);font-weight:300;line-height:1.6;}
 
 /* ABOUT */
 #about{background:white;}
@@ -93,43 +91,6 @@ section{padding:clamp(3rem,8vw,6rem) clamp(1.5rem,6vw,5rem);}
 .card-footer{padding:0.85rem 1.25rem;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;}
 .card-tools{font-size:0.72rem;color:var(--ink-light);}
 .card-arrow{font-size:0.78rem;color:var(--accent);font-weight:500;}
-
-/* MODAL — full screen panel */
-.modal-overlay{display:none;position:fixed;inset:0;background:var(--cream);z-index:500;overflow-y:auto;animation:modalIn 0.25s ease;}
-.modal-overlay.open{display:block;}
-@keyframes modalIn{from{opacity:0;}to{opacity:1;}}
-.modal-topbar{position:sticky;top:0;z-index:10;background:var(--cream);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(1.5rem,6vw,5rem);height:56px;}
-.modal-topbar .back-btn{display:flex;align-items:center;gap:0.5rem;background:none;border:none;font-family:var(--sans);font-size:0.85rem;color:var(--ink-mid);cursor:pointer;letter-spacing:0.04em;padding:0;}
-.modal-topbar .back-btn:hover{color:var(--accent);}
-.modal-topbar .proj-label{font-size:0.82rem;color:var(--ink-light);}
-.modal-inner{max-width:960px;margin:0 auto;padding:3rem clamp(1.5rem,6vw,3rem) 4rem;}
-.modal-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.1rem;}
-.modal-tag{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.2rem 0.6rem;border-radius:100px;font-weight:500;}
-.mt-teal{background:var(--teal-light);color:var(--teal);}
-.mt-coral{background:var(--accent-light);color:var(--accent);}
-.mt-purple{background:var(--purple-light);color:var(--purple);}
-.mt-green{background:#d8f0e0;color:#1a5e32;}
-.modal-title{font-family:var(--serif);font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.2;margin-bottom:0.4rem;}
-.modal-subtitle{font-size:0.88rem;color:var(--ink-light);margin-bottom:2rem;}
-.modal-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;}
-.modal-stat{background:white;border:1px solid var(--rule);border-radius:8px;padding:1rem;text-align:center;}
-.modal-stat .num{font-family:var(--serif);font-size:1.35rem;color:var(--accent);display:block;}
-.modal-stat .lbl{font-size:0.7rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.07em;display:block;margin-top:0.2rem;}
-.modal-desc{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;}
-.modal-section h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-bottom:0.6rem;}
-.modal-section p{font-size:0.9rem;color:var(--ink-mid);font-weight:300;line-height:1.8;}
-.modal-section+.modal-section{margin-top:1.25rem;}
-.tech-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.75rem;}
-.tech-chip{background:white;border:1px solid var(--rule);padding:0.25rem 0.65rem;border-radius:4px;font-size:0.76rem;color:var(--ink-mid);}
-.modal-link{display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;background:var(--ink);color:white;border-radius:4px;font-size:0.78rem;text-decoration:none;font-weight:500;transition:background 0.2s;margin-right:0.5rem;}
-.modal-link:hover{background:var(--accent);}
-.dash-embed{margin-top:2.5rem;}
-.dash-embed-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-bottom:0.75rem;}
-.browser-bar{background:var(--ink);padding:0.55rem 1rem;display:flex;align-items:center;gap:0.5rem;border-radius:10px 10px 0 0;}
-.browser-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
-.browser-file{font-size:0.72rem;color:rgba(255,255,255,0.38);margin-left:0.75rem;}
-.iframe-wrap{border:1px solid var(--rule);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
-@media(max-width:760px){.modal-desc{grid-template-columns:1fr;}.modal-meta{grid-template-columns:1fr 1fr;}}
 
 /* DASHBOARD */
 #dashboard{background:white;}
@@ -168,7 +129,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
 /* RESPONSIVE */
 @media(max-width:760px){
   #hero{grid-template-columns:1fr;min-height:auto;padding-top:3rem;}
-  .hero-visual{display:none;}
+  .hero-visual{display:flex;}
   .about-layout{grid-template-columns:1fr;}
   .project-grid{grid-template-columns:1fr;}
   .exp-item{grid-template-columns:1fr;gap:0.5rem;}
@@ -181,8 +142,8 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
 /* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 .hero-text{animation:fadeUp 0.55s ease both;}
-.hero-visual .stat-card:nth-child(1){animation:fadeUp 0.55s 0.1s ease both;}
-.hero-visual .stat-card:nth-child(2){animation:fadeUp 0.55s 0.2s ease both;}
+.hero-visual .hero-skill-card:nth-child(1){animation:fadeUp 0.55s 0.1s ease both;}
+.hero-visual .hero-skill-card:nth-child(2){animation:fadeUp 0.55s 0.2s ease both;}
 </style>
 </head>
 <body>
@@ -222,19 +183,26 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
     </div>
   </div>
   <div class="hero-visual">
-    <div class="stat-card">
-      <div class="stat-icon ic-coral">🎓</div>
-      <div>
-        <div class="stat-label">Graduate GPA</div>
-        <div class="stat-value">3.9 / 4.0 &nbsp;·&nbsp; Northeastern MPS Analytics</div>
+    <div class="hero-skill-card">
+      <div class="hero-skill-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
       </div>
+      <h4>Analytical Thinking</h4>
+      <p>Break complex problems into structured, solvable steps.</p>
     </div>
-    <div class="stat-card">
-      <div class="stat-icon ic-teal">📊</div>
-      <div>
-        <div class="stat-label">Projects completed</div>
-        <div class="stat-value">4 end-to-end analytics projects</div>
+    <div class="hero-skill-card">
+      <div class="hero-skill-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       </div>
+      <h4>Visual Storytelling</h4>
+      <p>Design charts and dashboards that communicate quickly.</p>
+    </div>
+    <div class="hero-skill-card">
+      <div class="hero-skill-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+      </div>
+      <h4>Business Insight</h4>
+      <p>Connect findings to practical recommendations.</p>
     </div>
   </div>
 </section>
@@ -310,7 +278,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
     <div class="project-grid">
 
       <!-- Card 1: WEVOLV -->
-      <div class="project-card" onclick="openModal('p1')">
+      <div class="project-card" onclick="window.location.href='project-wevolv.html'">
         <div class="card-viz" style="background:#0d1f35;">
           <canvas id="viz1"></canvas>
           <span class="card-num">01</span>
@@ -329,7 +297,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
       </div>
 
       <!-- Card 2: Transparency Index -->
-      <div class="project-card" onclick="openModal('p2')">
+      <div class="project-card" onclick="window.location.href='project-transparency.html'">
         <div class="card-viz" style="background:#1a0f2e;">
           <canvas id="viz2"></canvas>
           <span class="card-num">02</span>
@@ -348,7 +316,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
       </div>
 
       <!-- Card 3: German Credit -->
-      <div class="project-card" onclick="openModal('p3')">
+      <div class="project-card" onclick="window.location.href='project-credit.html'">
         <div class="card-viz" style="background:#0d2018;">
           <canvas id="viz3"></canvas>
           <span class="card-num">03</span>
@@ -367,7 +335,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
       </div>
 
       <!-- Card 4: World Happiness -->
-      <div class="project-card" onclick="openModal('p4')">
+      <div class="project-card" onclick="window.location.href='project-happiness.html'">
         <div class="card-viz" style="background:#0d1a10;">
           <canvas id="viz4"></canvas>
           <span class="card-num">04</span>
@@ -389,148 +357,6 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
   </div>
 </section>
 
-<!-- PROJECT DETAIL PANELS -->
-
-<!-- P1: WEVOLV -->
-<div class="modal-overlay" id="modal-p1">
-  <div class="modal-topbar">
-    <button class="back-btn" onclick="closeModal('p1')">&#8592; Back to projects</button>
-    <span class="proj-label">Project 01 &nbsp;·&nbsp; Group Capstone</span>
-  </div>
-  <div class="modal-inner">
-    <div class="modal-tags"><span class="modal-tag mt-teal">Regression Modeling</span><span class="modal-tag mt-coral">HR Tech</span><span class="modal-tag mt-purple">Group · 2026</span></div>
-    <h2 class="modal-title">WEVOLV Salary Benchmarking System</h2>
-    <p class="modal-subtitle">Northeastern University ALY6980 &nbsp;·&nbsp; Sponsor: WEVOLV &nbsp;·&nbsp; Python · Ridge/Lasso · PostgreSQL</p>
-    <div class="modal-meta">
-      <div class="modal-stat"><span class="num">7,977</span><span class="lbl">contract records</span></div>
-      <div class="modal-stat"><span class="num">R² 0.839</span><span class="lbl">Ridge &amp; Lasso</span></div>
-      <div class="modal-stat"><span class="num">60</span><span class="lbl">cohort cells</span></div>
-    </div>
-    <div class="modal-desc">
-      <div>
-        <div class="modal-section"><h4>My contribution</h4><p>I led Ridge and Lasso regression modeling and built the cohort quantile engine computing P25/P50/P75 salary within 60 peer groups (3 tiers × 5 positions × 4 experience brackets). I also discovered that 50.9% of raw user accounts were duplicate player profiles — a data governance finding resolved using a composite identity key.</p></div>
-        <div class="modal-section"><h4>Key findings</h4><p>Market tier membership accounts for 88.1% of model gain. The fair range intersection logic classified 48.9% of contracts as FAIR, 25.7% UNDERPAID, and 25.4% OVERPAID across all 7,977 records.</p></div>
-      </div>
-      <div>
-        <div class="modal-section"><h4>The problem</h4><p>International basketball players outside the NBA negotiate contracts with no reliable salary benchmarks. WEVOLV needed an engine to answer: "For someone like you, where does this offer fall relative to the market?"</p></div>
-        <div class="modal-section"><h4>Tools</h4>
-          <div class="tech-list"><span class="tech-chip">Python</span><span class="tech-chip">scikit-learn</span><span class="tech-chip">Ridge</span><span class="tech-chip">Lasso</span><span class="tech-chip">SQLAlchemy</span><span class="tech-chip">PostgreSQL</span><span class="tech-chip">pandas</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="dash-embed">
-      <div class="dash-embed-label">Interactive dashboard</div>
-      <div class="browser-bar"><span class="browser-dot" style="background:#ff5f57;"></span><span class="browser-dot" style="background:#febc2e;"></span><span class="browser-dot" style="background:#28c840;"></span><span class="browser-file">Wevolv_SalaryBenchmarking_Dashboard_design.html</span></div>
-      <div class="iframe-wrap"><iframe src="Wevolv_SalaryBenchmarking_Dashboard_design.html" style="width:100%;height:780px;border:none;display:block;" loading="lazy"></iframe></div>
-    </div>
-  </div>
-</div>
-
-<!-- P2: Transparency Index -->
-<div class="modal-overlay" id="modal-p2">
-  <div class="modal-topbar">
-    <button class="back-btn" onclick="closeModal('p2')">&#8592; Back to projects</button>
-    <span class="proj-label">Project 02 &nbsp;·&nbsp; Individual Capstone</span>
-  </div>
-  <div class="modal-inner">
-    <div class="modal-tags"><span class="modal-tag mt-coral">Machine Learning</span><span class="modal-tag mt-teal">Sports Analytics</span><span class="modal-tag mt-purple">Individual · 2026</span></div>
-    <h2 class="modal-title">Salary Transparency Index — International Basketball</h2>
-    <p class="modal-subtitle">Northeastern University ALY6980 &nbsp;·&nbsp; Python · Random Forest · Ridge Regression</p>
-    <div class="modal-meta">
-      <div class="modal-stat"><span class="num">7,867</span><span class="lbl">salary records</span></div>
-      <div class="modal-stat"><span class="num">R² 0.728</span><span class="lbl">Random Forest</span></div>
-      <div class="modal-stat"><span class="num">$5.6M</span><span class="lbl">market opportunity</span></div>
-    </div>
-    <div class="modal-desc">
-      <div>
-        <div class="modal-section"><h4>What I built</h4><p>A 4-dimension Salary Transparency Index scoring 8 major international leagues. The NBA scored 99.7/100; CBA scored 3.5/100 — a 96-point gap. A Random Forest on 7,867 records found position accounts for 61.6% of salary variance and nationality just 2.8%.</p></div>
-        <div class="modal-section"><h4>Key findings</h4><p>Leagues with player unions score ~51 points higher (t=4.35, p=.005). Revenue correlates strongly with transparency (r=.80, p=.017). The EuroLeague and CBA represent a combined $5.6M annual revenue opportunity.</p></div>
-      </div>
-      <div>
-        <div class="modal-section"><h4>The problem</h4><p>International basketball players negotiate contracts in markets with wildly uneven information access. This opacity enables chronic underpayment, especially for players from developing economies.</p></div>
-        <div class="modal-section"><h4>Tools</h4>
-          <div class="tech-list"><span class="tech-chip">Python</span><span class="tech-chip">scikit-learn</span><span class="tech-chip">Random Forest</span><span class="tech-chip">Ridge</span><span class="tech-chip">pandas</span><span class="tech-chip">matplotlib</span><span class="tech-chip">seaborn</span></div>
-          <a href="Jasmine-final.html" class="modal-link" target="_blank">Jupyter Notebook ↗</a>
-        </div>
-      </div>
-    </div>
-    <div class="dash-embed">
-      <div class="dash-embed-label">Interactive dashboard</div>
-      <div class="browser-bar"><span class="browser-dot" style="background:#ff5f57;"></span><span class="browser-dot" style="background:#febc2e;"></span><span class="browser-dot" style="background:#28c840;"></span><span class="browser-file">transparency_index_dashboard.html</span></div>
-      <div class="iframe-wrap"><iframe src="transparency_index_dashboard.html" style="width:100%;height:780px;border:none;display:block;" loading="lazy"></iframe></div>
-    </div>
-  </div>
-</div>
-
-<!-- P3: German Credit -->
-<div class="modal-overlay" id="modal-p3">
-  <div class="modal-topbar">
-    <button class="back-btn" onclick="closeModal('p3')">&#8592; Back to projects</button>
-    <span class="proj-label">Project 03 &nbsp;·&nbsp; ALY6080</span>
-  </div>
-  <div class="modal-inner">
-    <div class="modal-tags"><span class="modal-tag mt-green">Clustering</span><span class="modal-tag mt-teal">Classification</span><span class="modal-tag mt-purple">Group · 2025</span></div>
-    <h2 class="modal-title">German Bank Credit Risk &amp; Customer Segmentation</h2>
-    <p class="modal-subtitle">Northeastern University ALY6080 &nbsp;·&nbsp; Professor Bedayat &nbsp;·&nbsp; Python · K-Means · SVM</p>
-    <div class="modal-meta">
-      <div class="modal-stat"><span class="num">1,000</span><span class="lbl">applicant records</span></div>
-      <div class="modal-stat"><span class="num">3</span><span class="lbl">customer segments</span></div>
-      <div class="modal-stat"><span class="num">79%</span><span class="lbl">SVM accuracy</span></div>
-    </div>
-    <div class="modal-desc">
-      <div>
-        <div class="modal-section"><h4>What we built</h4><p>K-means clustering (k=3, silhouette 0.212) segmented 1,000 German bank customers into three borrower profiles. PCA retained 90% of variance. An SVM classifier with a linear kernel achieved 79% accuracy — up from 49% with RBF — predicting Low, Medium, and High default risk.</p></div>
-        <div class="modal-section"><h4>Key findings</h4><p>Three profiles emerged: asset-heavy mature borrowers (avg 6,342 DM), young independent starters (avg 2,584 DM), and balanced mid-age homeowners. Savings and checking account status showed the strongest negative correlation with default risk.</p></div>
-      </div>
-      <div>
-        <div class="modal-section"><h4>The problem</h4><p>Banks struggle to evaluate loan applicants with no prior credit history. Can behavioral and demographic features alone predict default risk and enable tailored lending strategies?</p></div>
-        <div class="modal-section"><h4>Tools</h4>
-          <div class="tech-list"><span class="tech-chip">Python</span><span class="tech-chip">scikit-learn</span><span class="tech-chip">K-Means</span><span class="tech-chip">SVM</span><span class="tech-chip">PCA</span><span class="tech-chip">pandas</span><span class="tech-chip">Tableau</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="dash-embed">
-      <div class="dash-embed-label">Interactive dashboard</div>
-      <div class="browser-bar"><span class="browser-dot" style="background:#ff5f57;"></span><span class="browser-dot" style="background:#febc2e;"></span><span class="browser-dot" style="background:#28c840;"></span><span class="browser-file">german_credit_dashboard.html</span></div>
-      <div class="iframe-wrap"><iframe src="german_credit_dashboard.html" style="width:100%;height:780px;border:none;display:block;" loading="lazy"></iframe></div>
-    </div>
-  </div>
-</div>
-
-<!-- P4: World Happiness -->
-<div class="modal-overlay" id="modal-p4">
-  <div class="modal-topbar">
-    <button class="back-btn" onclick="closeModal('p4')">&#8592; Back to projects</button>
-    <span class="proj-label">Project 04 &nbsp;·&nbsp; ALY6040</span>
-  </div>
-  <div class="modal-inner">
-    <div class="modal-tags"><span class="modal-tag mt-green">Data Mining</span><span class="modal-tag mt-teal">Policy Analytics</span><span class="modal-tag mt-purple">Individual · 2025</span></div>
-    <h2 class="modal-title">Predicting National Happiness — World Happiness Report</h2>
-    <p class="modal-subtitle">Northeastern University ALY-6040 &nbsp;·&nbsp; Professor O'Farrell &nbsp;·&nbsp; R · Random Forest · XGBoost</p>
-    <div class="modal-meta">
-      <div class="modal-stat"><span class="num">3</span><span class="lbl">country clusters</span></div>
-      <div class="modal-stat"><span class="num">0.575</span><span class="lbl">best AUC (RF)</span></div>
-      <div class="modal-stat"><span class="num">4</span><span class="lbl">models compared</span></div>
-    </div>
-    <div class="modal-desc">
-      <div>
-        <div class="modal-section"><h4>What I built</h4><p>Four analytical phases: K-means (k=3) segmented countries into developing, emerging, and developed tiers. Linear regression revealed non-linearity. Random Forest identified Unemployment Rate and Internet Access as top predictors. XGBoost ranked Political Stability first (12.57% gain) above GDP per Capita.</p></div>
-        <div class="modal-section"><h4>Key findings</h4><p>No single variable explains national happiness. Internet Access appeared in both RF and XGBoost top 5 — an underappreciated policy lever. All clusters dipped post-2020, consistent with COVID-19 disruption.</p></div>
-      </div>
-      <div>
-        <div class="modal-section"><h4>The problem</h4><p>What socioeconomic factors most significantly predict national happiness, and how can governments prioritize interventions to improve citizen wellbeing?</p></div>
-        <div class="modal-section"><h4>Tools</h4>
-          <div class="tech-list"><span class="tech-chip">R</span><span class="tech-chip">tidyverse</span><span class="tech-chip">caret</span><span class="tech-chip">randomForest</span><span class="tech-chip">xgboost</span><span class="tech-chip">pROC</span><span class="tech-chip">ggplot2</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="dash-embed">
-      <div class="dash-embed-label">Interactive dashboard</div>
-      <div class="browser-bar"><span class="browser-dot" style="background:#ff5f57;"></span><span class="browser-dot" style="background:#febc2e;"></span><span class="browser-dot" style="background:#28c840;"></span><span class="browser-file">happiness_dashboard.html</span></div>
-      <div class="iframe-wrap"><iframe src="happiness_dashboard.html" style="width:100%;height:780px;border:none;display:block;" loading="lazy"></iframe></div>
-    </div>
-  </div>
-</div>
 
 <!-- EXPERIENCE -->
 <section id="experience">
@@ -579,7 +405,7 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
     <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Let's connect</h2></div>
     <p class="sub-text">Open to data analyst, business analyst, research associate, and coordinator roles in Seattle, WA. Happy to chat about your team's needs.</p>
     <div class="contact-links">
-      <a class="contact-link primary" href="mailto:minhhchauu3@gmail.com" id="email-btn">Email me</a>
+      <a class="contact-link primary" href="/cdn-cgi/l/email-protection#402d292e282823282135357300272d21292c6e232f2d" id="email-btn">Email me</a>
       <a href="https://www.linkedin.com/in/chaujasminephan/" class="contact-link" target="_blank">LinkedIn</a>
     </div>
   </div>
@@ -587,25 +413,8 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
 
 <footer>&copy; 2026 Chau (Jasmine) Phan &mdash; Seattle, WA</footer>
 
-<script>
-// Full-screen project panels
-function openModal(id){
-  var el=document.getElementById('modal-'+id);
-  el.classList.add('open');
-  el.scrollTop=0;
-  document.body.style.overflow='hidden';
-}
-function closeModal(id){
-  document.getElementById('modal-'+id).classList.remove('open');
-  document.body.style.overflow='';
-}
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape'){
-    document.querySelectorAll('.modal-overlay.open').forEach(function(el){
-      el.classList.remove('open');document.body.style.overflow='';
-    });
-  }
-});
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
 
 // Mini chart helpers
 const dkGrid={color:'rgba(255,255,255,0.06)'};
@@ -638,7 +447,4 @@ new Chart(document.getElementById('viz4'),{type:'line',data:{
     {data:[5.1,5.15,5.2,5.25,5.3,5.1,5.05,5.15,5.2],borderColor:'rgba(88,166,255,0.85)',backgroundColor:'rgba(88,166,255,0.06)',tension:0.4,pointRadius:2,fill:true,borderWidth:2},
     {data:[6.8,6.85,6.9,6.92,6.95,6.7,6.75,6.82,6.88],borderColor:'rgba(245,200,66,0.9)',backgroundColor:'rgba(245,200,66,0.05)',tension:0.4,pointRadius:2,fill:true,borderWidth:2}
   ]
-},{options:{...baseOpts,scales:{x:{grid:{color:dkGrid.color},ticks:dkTick,border:{color:'transparent'}},y:{grid:{color:dkGrid.color},ticks:dkTick,border:{color:'transparent'},min:3,max:8}},layout:{padding:{top:16,bottom:10,left:12,right:12}}}});
-</script>
-</body>
-</html>
+},{options:{...baseOpts,scales:{x:{grid:{color:dkGrid.color},ticks:dkTick,border:{color:'transparent'}},y:{grid:{color:d
