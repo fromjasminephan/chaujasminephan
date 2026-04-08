@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WEVOLV Salary Benchmarking — Jasmine Phan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#1a1814;--ink-mid:#4a4640;--ink-light:#8a8480;--cream:#f5f2ec;--cream-warm:#ede8df;--white:#fff;--accent:#c85c38;--accent-light:#f0d4c8;--teal:#2a6b64;--teal-light:#d0e8e6;--purple:#5540c0;--purple-light:#e8e4f8;--rule:rgba(26,24,20,0.10);--sans:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.7;font-size:16px;}
+nav{background:var(--cream);border-bottom:1px solid var(--rule);padding:0 clamp(1.5rem,6vw,5rem);display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--serif);font-size:1.05rem;text-decoration:none;color:var(--ink);}
+.back-link{display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:var(--ink-mid);font-size:0.85rem;transition:color 0.2s;}
+.back-link:hover{color:var(--accent);}
+.page{max-width:900px;margin:0 auto;padding:3rem clamp(1.5rem,6vw,3rem) 5rem;}
+.tag-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.25rem;}
+.tag{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.22rem 0.65rem;border-radius:100px;font-weight:500;}
+.tag-teal{background:var(--teal-light);color:var(--teal);}
+.tag-coral{background:var(--accent-light);color:var(--accent);}
+.tag-purple{background:var(--purple-light);color:var(--purple);}
+.tag-green{background:#d8f0e0;color:#1a5e32;}
+h1{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);line-height:1.2;margin-bottom:0.5rem;}
+.meta{font-size:0.88rem;color:var(--ink-light);margin-bottom:2.5rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+.meta span{display:flex;align-items:center;gap:0.35rem;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:3rem;}
+.stat-box{background:white;border:1px solid var(--rule);border-radius:10px;padding:1.25rem;text-align:center;}
+.stat-box .num{font-family:var(--serif);font-size:1.6rem;color:var(--accent);display:block;}
+.stat-box .lbl{font-size:0.72rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3rem;}
+.section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
+.section p{font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.section ul{padding-left:1.1rem;font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.section ul li{margin-bottom:0.3rem;}
+.divider{border:none;border-top:1px solid var(--rule);margin:2.5rem 0;}
+.full-section{margin-bottom:2.5rem;}
+.full-section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
+.full-section p{font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.tech-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
+.chip{background:white;border:1px solid var(--rule);padding:0.28rem 0.75rem;border-radius:4px;font-size:0.8rem;color:var(--ink-mid);}
+.dash-section{margin-top:3rem;}
+.dash-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-bottom:0.75rem;}
+.dash-title{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.5rem;}
+.dash-sub{font-size:0.85rem;color:var(--ink-mid);font-weight:300;margin-bottom:1.25rem;}
+.browser-bar{background:#1a1814;padding:0.55rem 1rem;display:flex;align-items:center;gap:0.5rem;border-radius:10px 10px 0 0;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.browser-file{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-left:0.75rem;}
+.iframe-wrap{border:1px solid var(--rule);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.two-col{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Jasmine Chau</a>
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+</nav>
+<div class="page">
+  <div class="tag-row">
+    <span class="tag tag-teal">Regression Modeling</span>
+    <span class="tag tag-coral">HR Tech</span>
+    <span class="tag tag-purple">Group Capstone · 2026</span>
+  </div>
+  <h1>WEVOLV Salary Benchmarking System</h1>
+  <div class="meta">
+    <span>📅 Completed: March 2026</span>
+    <span>🏢 Sponsor: WEVOLV</span>
+    <span>⏱️ Duration: 12 weeks</span>
+    <span>👥 Team of 3</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box"><span class="num">7,977</span><span class="lbl">Contract records</span></div>
+    <div class="stat-box"><span class="num">R² 0.839</span><span class="lbl">Ridge &amp; Lasso</span></div>
+    <div class="stat-box"><span class="num">60</span><span class="lbl">Cohort peer groups</span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>Business problem</h2>
+      <p>International basketball players outside the NBA negotiate contracts with no reliable salary benchmarks. Teams hold all the information; athletes have none. This structural asymmetry enables chronic underpayment. WEVOLV — an AI platform for athlete empowerment — needed a data engine to answer: <em>"For someone like you, where does this offer fall relative to the market?"</em></p>
+    </div>
+    <div class="section">
+      <h2>My contribution</h2>
+      <ul>
+        <li>Led Ridge and Lasso regression modeling with 5-fold cross-validation</li>
+        <li>Built the cohort quantile engine computing P25/P50/P75 within 60 peer groups (3 tiers × 5 positions × 4 experience brackets)</li>
+        <li>Designed the fair range intersection logic combining ML bands with empirical distributions</li>
+        <li>Discovered 50.9% of user accounts were duplicate profiles — delivered as a data governance finding to WEVOLV</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>Analytical approach</h2>
+      <ul>
+        <li>Extracted data from PostgreSQL (AWS RDS) via SQLAlchemy — 47,415 raw records</li>
+        <li>Standardized 20 position formats, converted 16 currencies to USD</li>
+        <li>Deduplication using composite identity key (name + DOB + season)</li>
+        <li>Ridge: best possible linear prediction under multicollinearity</li>
+        <li>Lasso: feature elimination to identify data collection priorities</li>
+        <li>Fair range = intersection of ML 80% prediction band and empirical P25–P75</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h2>Key findings</h2>
+      <ul>
+        <li>Market tier accounts for 88.1% of model gain — tier is the product, not prediction</li>
+        <li>Lasso retained all 8 features at best alpha (0.0001) — no redundant variables</li>
+        <li>Fair range engine classified 48.9% FAIR, 25.7% UNDERPAID, 25.4% OVERPAID</li>
+        <li>Nationality contributes only 0.5% of model gain — the US/non-US gap is a tier artifact</li>
+        <li>Players aged 29–31 are most systematically underpaid across all tiers</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="full-section">
+    <h2>Technical stack</h2>
+    <div class="tech-list">
+      <span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">Ridge Regression</span><span class="chip">Lasso Regression</span><span class="chip">SQLAlchemy</span><span class="chip">PostgreSQL</span><span class="chip">pandas</span><span class="chip">numpy</span><span class="chip">Jupyter</span>
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="dash-label">Interactive dashboard</div>
+    <h2 class="dash-title">Salary Benchmarking Dashboard</h2>
+    <p class="dash-sub">Player · Agent · Team views with live percentile lookup, fair range engine, and ML monitoring tabs.</p>
+    <div class="browser-bar">
+      <span class="dot" style="background:#ff5f57;"></span>
+      <span class="dot" style="background:#febc2e;"></span>
+      <span class="dot" style="background:#28c840;"></span>
+      <span class="browser-file">Wevolv_SalaryBenchmarking_Dashboard_design.html</span>
+    </div>
+    <div class="iframe-wrap">
+      <iframe src="Wevolv_SalaryBenchmarking_Dashboard_design.html" style="width:100%;height:800px;border:none;display:block;" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+</body>
+</html>

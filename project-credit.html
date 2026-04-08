@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>German Bank Credit Risk — Jasmine Phan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#1a1814;--ink-mid:#4a4640;--ink-light:#8a8480;--cream:#f5f2ec;--accent:#c85c38;--accent-light:#f0d4c8;--teal:#2a6b64;--teal-light:#d0e8e6;--purple:#5540c0;--purple-light:#e8e4f8;--green-light:#d8f0e0;--green:#1a5e32;--rule:rgba(26,24,20,0.10);--sans:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.7;font-size:16px;}
+nav{background:var(--cream);border-bottom:1px solid var(--rule);padding:0 clamp(1.5rem,6vw,5rem);display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--serif);font-size:1.05rem;text-decoration:none;color:var(--ink);}
+.back-link{display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:var(--ink-mid);font-size:0.85rem;transition:color 0.2s;}
+.back-link:hover{color:var(--accent);}
+.page{max-width:900px;margin:0 auto;padding:3rem clamp(1.5rem,6vw,3rem) 5rem;}
+.tag-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.25rem;}
+.tag{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.22rem 0.65rem;border-radius:100px;font-weight:500;}
+.tag-teal{background:var(--teal-light);color:var(--teal);}
+.tag-purple{background:var(--purple-light);color:var(--purple);}
+.tag-green{background:var(--green-light);color:var(--green);}
+h1{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);line-height:1.2;margin-bottom:0.5rem;}
+.meta{font-size:0.88rem;color:var(--ink-light);margin-bottom:2.5rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:3rem;}
+.stat-box{background:white;border:1px solid var(--rule);border-radius:10px;padding:1.25rem;text-align:center;}
+.stat-box .num{font-family:var(--serif);font-size:1.6rem;color:var(--accent);display:block;}
+.stat-box .lbl{font-size:0.7rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3rem;}
+.section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
+.section p{font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.section ul{padding-left:1.1rem;font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.section ul li{margin-bottom:0.3rem;}
+.divider{border:none;border-top:1px solid var(--rule);margin:2.5rem 0;}
+.full-section{margin-bottom:2.5rem;}
+.full-section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
+.tech-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
+.chip{background:white;border:1px solid var(--rule);padding:0.28rem 0.75rem;border-radius:4px;font-size:0.8rem;color:var(--ink-mid);}
+.dash-section{margin-top:3rem;}
+.dash-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-bottom:0.75rem;}
+.dash-title{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.5rem;}
+.dash-sub{font-size:0.85rem;color:var(--ink-mid);font-weight:300;margin-bottom:1.25rem;}
+.browser-bar{background:#1a1814;padding:0.55rem 1rem;display:flex;align-items:center;gap:0.5rem;border-radius:10px 10px 0 0;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.browser-file{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-left:0.75rem;}
+.iframe-wrap{border:1px solid var(--rule);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.two-col{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Jasmine Chau</a>
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+</nav>
+<div class="page">
+  <div class="tag-row">
+    <span class="tag tag-green">Clustering</span>
+    <span class="tag tag-teal">Classification</span>
+    <span class="tag tag-purple">Group Project · 2025</span>
+  </div>
+  <h1>German Bank Credit Risk &amp; Customer Segmentation</h1>
+  <div class="meta">
+    <span>📅 Completed: May 2025</span>
+    <span>🏢 Northeastern University ALY6080</span>
+    <span>👥 Team of 5</span>
+    <span>📊 1,000 records</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box"><span class="num">1,000</span><span class="lbl">Applicant records</span></div>
+    <div class="stat-box"><span class="num">3</span><span class="lbl">Customer segments</span></div>
+    <div class="stat-box"><span class="num">79%</span><span class="lbl">SVM accuracy</span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>Business problem</h2>
+      <p>Banks struggle to evaluate loan applicants with no prior credit history — standard scoring models fail entirely when there's no credit track record. This project asked: can behavioral and demographic features alone predict default risk? And how can customers be segmented to enable tailored, data-driven lending strategies?</p>
+    </div>
+    <div class="section">
+      <h2>What we built</h2>
+      <ul>
+        <li>K-means clustering (k=3) to segment customers into distinct borrower profiles</li>
+        <li>PCA for dimensionality reduction — 90% variance retained</li>
+        <li>Engineered a 3-tier risk label (Low/Medium/High) based on financial indicators</li>
+        <li>SVM classifier with linear kernel — 79% accuracy vs 49% with RBF kernel</li>
+        <li>Bivariate analysis across purpose, housing, job type, age, and duration</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>Customer segments</h2>
+      <ul>
+        <li><strong>Cluster 0 — Asset-Heavy Mature Borrowers:</strong> Avg age 42, avg loan 6,342 DM, 31+ month terms. Best candidates for secured lending and auto loans.</li>
+        <li><strong>Cluster 1 — Young Independent Starters:</strong> Avg age 32, smaller loans ~2,584 DM, shorter terms. Ideal for first-time borrower programs.</li>
+        <li><strong>Cluster 2 — Balanced Mid-Age Homeowners:</strong> Avg age 36, 88% own homes. Suited for cross-selling and bundled financial products.</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h2>Key findings</h2>
+      <ul>
+        <li>Savings and checking account status are strongest negative correlators with default risk</li>
+        <li>Job type shows virtually no correlation once other features controlled</li>
+        <li>Silhouette score 0.212, ARI 0.812 — clusters are stable and well-separated</li>
+        <li>All VIF values below 5 — no multicollinearity in the feature set</li>
+        <li>Switching from RBF to linear kernel: +30 percentage point accuracy improvement</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="full-section">
+    <h2>Technical stack</h2>
+    <div class="tech-list">
+      <span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">K-Means</span><span class="chip">SVM (SVC)</span><span class="chip">PCA</span><span class="chip">pandas</span><span class="chip">matplotlib</span><span class="chip">Tableau</span><span class="chip">statsmodels</span>
+    </div>
+  </div>
+
+  <div class="dash-section">
+    <div class="dash-label">Interactive dashboard</div>
+    <h2 class="dash-title">Credit Risk Analysis Dashboard</h2>
+    <p class="dash-sub">Explore customer segments, risk distribution, SVM performance, and feature correlations.</p>
+    <div class="browser-bar">
+      <span class="dot" style="background:#ff5f57;"></span>
+      <span class="dot" style="background:#febc2e;"></span>
+      <span class="dot" style="background:#28c840;"></span>
+      <span class="browser-file">german_credit_dashboard.html</span>
+    </div>
+    <div class="iframe-wrap">
+      <iframe src="german_credit_dashboard.html" style="width:100%;height:800px;border:none;display:block;" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+</body>
+</html>
