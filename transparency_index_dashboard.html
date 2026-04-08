@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Salary Transparency Index — International Basketball</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0c0f16;--surface:#131720;--surface2:#1a2030;--border:rgba(255,255,255,0.07);
+    --text:#eef0f5;--muted:#6b7492;--dim:#363d56;
+    --gold:#f5c842;--gold-d:rgba(245,200,66,0.12);
+    --sky:#58a6ff;--sky-d:rgba(88,166,255,0.12);
+    --rose:#f28b82;--rose-d:rgba(242,139,130,0.12);
+    --sage:#5ec887;--sage-d:rgba(94,200,135,0.12);
+    --lav:#c084fc;--lav-d:rgba(192,132,252,0.12);
+    --coral:#fb923c;--coral-d:rgba(251,146,60,0.12);
+    --sans:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;
+    --r:10px;--rs:6px;
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;}
+  .header{padding:1.4rem 2rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .header h1{font-family:var(--serif);font-size:1.4rem;font-weight:400;}
+  .header p{font-size:0.78rem;color:var(--muted);margin-top:0.2rem;}
+  .tabs{display:flex;gap:0.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:0.25rem;}
+  .tab{padding:0.35rem 0.9rem;border-radius:4px;font-size:0.78rem;cursor:pointer;color:var(--muted);border:none;background:none;font-family:var(--sans);transition:all 0.2s;}
+  .tab.active{background:var(--surface2);color:var(--text);}
+  .tab:hover:not(.active){color:var(--text);}
+  .page{display:none;padding:1.5rem 2rem 2.5rem;}
+  .page.active{display:block;}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem;}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-bottom:1.25rem;}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+  .g21{display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem 1.25rem;}
+  .ct{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:0.65rem;}
+  .metric{font-size:1.9rem;font-weight:500;font-family:var(--serif);line-height:1;}
+  .msub{font-size:0.75rem;color:var(--muted);margin-top:0.3rem;}
+  .badge{display:inline-block;padding:0.15rem 0.55rem;border-radius:100px;font-size:0.7rem;font-weight:500;}
+  .bg{background:var(--sage-d);color:var(--sage);}
+  .ba{background:var(--gold-d);color:var(--gold);}
+  .br{background:var(--rose-d);color:var(--rose);}
+  .bb{background:var(--sky-d);color:var(--sky);}
+  .cw{position:relative;width:100%;}
+  /* Heatmap */
+  .hmap{width:100%;border-collapse:collapse;font-size:0.78rem;}
+  .hmap th{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);padding:0.4rem 0.6rem;text-align:center;border-bottom:1px solid var(--border);font-weight:400;}
+  .hmap th.left{text-align:left;}
+  .hmap td{padding:0.4rem 0.6rem;text-align:center;font-weight:500;}
+  .hmap tr{border-bottom:1px solid var(--border);}
+  .hmap tr:last-child{border-bottom:none;}
+  .hmap .league-name{text-align:left;color:var(--text);font-weight:400;}
+  /* fi bars */
+  .fi{display:flex;align-items:center;gap:0.75rem;padding:0.42rem 0;border-bottom:1px solid var(--border);}
+  .fi:last-child{border-bottom:none;}
+  .fi-r{width:18px;font-size:0.7rem;color:var(--muted);text-align:right;flex-shrink:0;}
+  .fi-l{width:140px;font-size:0.82rem;flex-shrink:0;}
+  .fi-bw{flex:1;background:var(--surface2);border-radius:100px;height:6px;}
+  .fi-b{height:6px;border-radius:100px;}
+  .fi-v{width:48px;font-size:0.78rem;color:var(--muted);text-align:right;flex-shrink:0;}
+  /* insight pills */
+  .ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;}
+  .ip{background:var(--surface2);border-radius:var(--rs);padding:0.85rem;}
+  @media(max-width:680px){
+    .g4,.g3{grid-template-columns:1fr 1fr;}.g2,.g21{grid-template-columns:1fr;}
+    .page{padding:1rem;}.header{padding:1rem;}.fi-l{width:100px;}
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Salary Transparency Index — International Basketball</h1>
+    <p>ALY6980 Individual Capstone &nbsp;·&nbsp; Python · Random Forest · Ridge Regression · scipy &nbsp;·&nbsp; 7,867 records · 8 leagues</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('overview')">Overview</button>
+    <button class="tab" onclick="showTab('leagues')">League Analysis</button>
+    <button class="tab" onclick="showTab('salary')">Salary Patterns</button>
+    <button class="tab" onclick="showTab('models')">Models</button>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div class="page active" id="tab-overview">
+  <div class="g4">
+    <div class="card"><div class="ct">Records analyzed</div><div class="metric" style="color:var(--sky)">7,867</div><div class="msub">69 nationalities · 41 seasons</div></div>
+    <div class="card"><div class="ct">Transparency gap</div><div class="metric" style="color:var(--gold)">96 pts</div><div class="msub">NBA 99.7 vs CBA 3.5</div></div>
+    <div class="card"><div class="ct">Best model R²</div><div class="metric" style="color:var(--sage)">0.728</div><div class="msub">Random Forest</div></div>
+    <div class="card"><div class="ct">Market opportunity</div><div class="metric" style="color:var(--lav)">$5.6M</div><div class="msub">EuroLeague + CBA (7.5% capture)</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Salary Transparency Index — league rankings</div>
+      <div class="cw" style="height:280px;"><canvas id="transparencyBar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Market opportunity matrix (transparency vs market value)</div>
+      <div class="cw" style="height:280px;"><canvas id="opportunityScatter"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Key findings</div>
+    <div class="ig" style="margin-top:0.25rem;">
+      <div class="ip"><div style="font-size:0.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">96-point gap</div><div style="font-weight:500;font-size:0.88rem;margin-bottom:0.2rem;">NBA vs CBA transparency</div><div style="font-size:0.8rem;color:var(--muted);">Not a data collection failure — a deliberate governance choice that preserves team bargaining power.</div></div>
+      <div class="ip"><div style="font-size:0.7rem;color:var(--sky);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Player unions matter</div><div style="font-weight:500;font-size:0.88rem;margin-bottom:0.2rem;">~51 pt transparency advantage</div><div style="font-size:0.8rem;color:var(--muted);">Leagues with formal player associations score significantly higher (t=4.35, p=.005).</div></div>
+      <div class="ip"><div style="font-size:0.7rem;color:var(--sage);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Revenue correlation</div><div style="font-weight:500;font-size:0.88rem;margin-bottom:0.2rem;">r = .80 (p = .017)</div><div style="font-size:0.8rem;color:var(--muted);">Higher revenue leagues are more transparent — but causation may run both ways.</div></div>
+      <div class="ip"><div style="font-size:0.7rem;color:var(--lav);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Position dominates</div><div style="font-weight:500;font-size:0.88rem;margin-bottom:0.2rem;">61.6% of salary variance</div><div style="font-size:0.8rem;color:var(--muted);">Position is the #1 structural salary driver; nationality accounts for only 2.8%.</div></div>
+      <div class="ip"><div style="font-size:0.7rem;color:var(--rose);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Nationality ≠ penalty</div><div style="font-weight:500;font-size:0.88rem;margin-bottom:0.2rem;">US/non-US gap is a tier artifact</div><div style="font-size:0.8rem;color:var(--muted);">The raw salary gap disappears once market tier is controlled — not direct discrimination.</div></div>
+      <div class="ip"><div style="font-size:0.7rem;color:var(--coral);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Strategic opportunity</div><div style="font-weight:500;font-size:0.88rem;margin-bottom:0.2rem;">EuroLeague + CBA</div><div style="font-size:0.8rem;color:var(--muted);">High market value, near-zero transparency — no existing benchmarking competitors.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEAGUE ANALYSIS -->
+<div class="page" id="tab-leagues">
+  <div class="card" style="margin-bottom:1.25rem;">
+    <div class="ct">Transparency heatmap — leagues × dimensions</div>
+    <div style="overflow-x:auto;margin-top:0.5rem;">
+      <table class="hmap">
+        <thead>
+          <tr>
+            <th class="left">League</th>
+            <th>DB Avail. (40%)</th>
+            <th>Media (30%)</th>
+            <th>Policy (20%)</th>
+            <th>Financial (10%)</th>
+            <th>Composite</th>
+            <th>Rank</th>
+          </tr>
+        </thead>
+        <tbody id="hmapBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Union strength vs transparency score</div>
+      <div style="display:flex;gap:1.5rem;margin:0.75rem 0 1rem;">
+        <div style="text-align:center;background:var(--surface2);border-radius:var(--rs);padding:0.85rem 1.2rem;">
+          <div style="font-size:1.5rem;font-weight:500;font-family:var(--serif);color:var(--sage);">~68</div>
+          <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">With player union</div>
+        </div>
+        <div style="text-align:center;background:var(--surface2);border-radius:var(--rs);padding:0.85rem 1.2rem;">
+          <div style="font-size:1.5rem;font-weight:500;font-family:var(--serif);color:var(--rose);">~17</div>
+          <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">Without union</div>
+        </div>
+        <div style="text-align:center;background:var(--surface2);border-radius:var(--rs);padding:0.85rem 1.2rem;">
+          <div style="font-size:1.5rem;font-weight:500;font-family:var(--serif);color:var(--gold);">4.35</div>
+          <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;">t-statistic (p=.005)</div>
+        </div>
+      </div>
+      <div class="cw" style="height:200px;"><canvas id="unionChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Revenue vs transparency (r = .80, p = .017)</div>
+      <div class="cw" style="height:260px;"><canvas id="revenueChart"></canvas></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Sensitivity analysis — rankings across 4 weighting schemes</div>
+    <div class="cw" style="height:220px;"><canvas id="sensitivityChart"></canvas></div>
+  </div>
+</div>
+
+<!-- SALARY PATTERNS -->
+<div class="page" id="tab-salary">
+  <div class="g4">
+    <div class="card"><div class="ct">Mean salary</div><div class="metric" style="color:var(--sky)">$7.04M</div><div class="msub">All players</div></div>
+    <div class="card"><div class="ct">Median salary</div><div class="metric" style="color:var(--sage)">$2.30M</div><div class="msub">Right-skewed distribution</div></div>
+    <div class="card"><div class="ct">Gini coefficient</div><div class="metric" style="color:var(--gold)">0.666</div><div class="msub">High inequality (superstar structure)</div></div>
+    <div class="card"><div class="ct">Intl player premium</div><div class="metric" style="color:var(--lav)">$1.7M</div><div class="msub">Intl avg $8.46M vs US $6.77M</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Mean salary by position (USD millions)</div>
+      <div class="cw" style="height:240px;"><canvas id="positionChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Salary by nationality group (log scale)</div>
+      <div class="cw" style="height:240px;"><canvas id="natChart"></canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Experience vs salary — non-linear career curve</div>
+      <div class="cw" style="height:220px;"><canvas id="expChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ct">Top nationalities by mean salary (USD millions)</div>
+      <div class="cw" style="height:220px;"><canvas id="nationalityChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODELS -->
+<div class="page" id="tab-models">
+  <div class="g3">
+    <div class="card"><div class="ct">Linear Regression R²</div><div class="metric" style="color:var(--rose)">0.368</div><div class="msub">Cannot capture non-linear experience curve</div></div>
+    <div class="card"><div class="ct">Ridge Regression R²</div><div class="metric" style="color:var(--gold)">0.368</div><div class="msub">Low multicollinearity confirmed</div></div>
+    <div class="card"><div class="ct">Random Forest R²</div><div class="metric" style="color:var(--sage)">0.728</div><div class="msub">+36pt gain over linear · Primary model</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Random Forest — feature importance</div>
+      <div style="margin-top:0.5rem;">
+        <div class="fi"><div class="fi-r">1</div><div class="fi-l">Position</div><div class="fi-bw"><div class="fi-b" style="width:100%;background:var(--lav)"></div></div><div class="fi-v" style="color:var(--lav)">61.6%</div></div>
+        <div class="fi"><div class="fi-r">2</div><div class="fi-l">Experience (yrs)</div><div class="fi-bw"><div class="fi-b" style="width:30%;background:var(--sky)"></div></div><div class="fi-v">18.5%</div></div>
+        <div class="fi"><div class="fi-r">3</div><div class="fi-l">Age</div><div class="fi-bw"><div class="fi-b" style="width:28%;background:var(--sky)"></div></div><div class="fi-v">17.1%</div></div>
+        <div class="fi"><div class="fi-r">4</div><div class="fi-l">Nationality (is_US)</div><div class="fi-bw"><div class="fi-b" style="width:5%;background:var(--rose)"></div></div><div class="fi-v" style="color:var(--rose)">2.8%</div></div>
+      </div>
+      <div style="margin-top:1rem;background:var(--surface2);border-radius:var(--rs);padding:0.85rem;">
+        <div style="font-size:0.7rem;color:var(--lav);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Key insight</div>
+        <div style="font-size:0.82rem;color:var(--muted);">Position drives 61.6% of salary variance — consistent with Berri & Simmons (2011). Nationality contributes just 2.8%, and the raw US/non-US gap is a tier-distribution artifact, not discrimination.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Model performance comparison</div>
+      <div class="cw" style="height:220px;"><canvas id="modelCompChart"></canvas></div>
+      <div style="margin-top:1rem;">
+        <div class="fi"><div class="fi-l" style="width:130px;">Linear Regression</div><div class="fi-bw"><div class="fi-b" style="width:50%;background:var(--rose)"></div></div><div class="fi-v">R²=0.368</div></div>
+        <div class="fi"><div class="fi-l" style="width:130px;">Ridge Regression</div><div class="fi-bw"><div class="fi-b" style="width:50%;background:var(--gold)"></div></div><div class="fi-v">R²=0.368</div></div>
+        <div class="fi"><div class="fi-l" style="width:130px;">Random Forest ★</div><div class="fi-bw"><div class="fi-b" style="width:100%;background:var(--sage)"></div></div><div class="fi-v" style="color:var(--sage)">R²=0.728</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">Lasso coefficient analysis — feature priority ranking</div>
+    <div class="cw" style="height:200px;"><canvas id="lassoChart"></canvas></div>
+    <div style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);">Lasso retained all 8 features at best alpha (0.0001) — confirming every measured attribute carries independent salary signal. The negative is_US coefficient confirms that once tier is controlled, US players do not earn more within the same tier.</div>
+  </div>
+</div>
+
+<script>
+function showTab(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// Heatmap
+const leagues=[
+  {name:'NBA',db:100,media:99,policy:100,fin:100,score:99.7,rank:'1st'},
+  {name:'Australian NBL',db:60,media:45,policy:75,fin:22,score:54.9,rank:'2nd'},
+  {name:'Liga ACB (Spain)',db:55,media:40,policy:75,fin:28,score:51.8,rank:'3rd'},
+  {name:'Turkish BSL',db:20,media:30,policy:50,fin:13,score:28.2,rank:'4th'},
+  {name:'Korean KBL',db:10,media:15,policy:25,fin:10,score:14.5,rank:'5th'},
+  {name:'EuroLeague',db:9,media:15,policy:25,fin:11,score:14.4,rank:'6th'},
+  {name:'Japanese B.League',db:8,media:10,policy:25,fin:13,score:12.4,rank:'7th'},
+  {name:'CBA (China)',db:3,media:8,policy:0,fin:0,score:3.5,rank:'8th'},
+];
+function cellColor(v){
+  if(v>=60)return'rgba(94,200,135,0.25)';
+  if(v>=25)return'rgba(245,200,66,0.2)';
+  return'rgba(242,139,130,0.2)';
+}
+function cellTextColor(v){
+  if(v>=60)return'#5ec887';
+  if(v>=25)return'#f5c842';
+  return'#f28b82';
+}
+const tbody=document.getElementById('hmapBody');
+leagues.forEach(l=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td class="league-name">${l.name}</td>
+    <td style="background:${cellColor(l.db)};color:${cellTextColor(l.db)}">${l.db}</td>
+    <td style="background:${cellColor(l.media)};color:${cellTextColor(l.media)}">${l.media}</td>
+    <td style="background:${cellColor(l.policy)};color:${cellTextColor(l.policy)}">${l.policy}</td>
+    <td style="background:${cellColor(l.fin)};color:${cellTextColor(l.fin)}">${l.fin}</td>
+    <td style="font-weight:500;color:${cellTextColor(l.score)}">${l.score}</td>
+    <td style="color:var(--muted)">${l.rank}</td>`;
+  tbody.appendChild(tr);
+});
+
+const ds=darkScales={
+  x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#6b7492',font:{family:"'DM Sans'",size:11}},border:{color:'rgba(255,255,255,0.05)'}},
+  y:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#6b7492',font:{family:"'DM Sans'",size:11}},border:{color:'rgba(255,255,255,0.05)'}}
+};
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7492',font:{family:"'DM Sans'",size:11},boxWidth:10,padding:12}}}};
+const C=(id,type,data,opts)=>new Chart(document.getElementById(id).getContext('2d'),{type,data,options:opts});
+
+// Transparency bar
+C('transparencyBar','bar',{
+  labels:['NBA','AUS NBL','Liga ACB','Turkish BSL','KBL','EuroLeague','Japan BL','CBA'],
+  datasets:[{label:'Transparency Score',data:[99.7,54.9,51.8,28.2,14.5,14.4,12.4,3.5],backgroundColor:['rgba(94,200,135,0.8)','rgba(94,200,135,0.65)','rgba(94,200,135,0.65)','rgba(245,200,66,0.7)','rgba(242,139,130,0.6)','rgba(242,139,130,0.6)','rgba(242,139,130,0.6)','rgba(242,139,130,0.8)'],borderRadius:4,borderSkipped:false}]
+},{...base,indexAxis:'y',scales:{x:{...ds.x,max:110},y:{...ds.y}},plugins:{legend:{display:false},annotation:{annotations:{line1:{type:'line',xMin:50,xMax:50,borderColor:'rgba(255,255,255,0.15)',borderDash:[4,4]}}}}});
+
+// Opportunity scatter
+C('opportunityScatter','scatter',{
+  datasets:[
+    {label:'NBA (Saturated)',data:[{x:99.7,y:4200}],backgroundColor:'rgba(94,200,135,0.8)',pointRadius:14,pointHoverRadius:16},
+    {label:'EuroLeague (Opportunity)',data:[{x:14.4,y:190}],backgroundColor:'rgba(242,139,130,0.85)',pointRadius:10},
+    {label:'CBA (Opportunity)',data:[{x:3.5,y:182}],backgroundColor:'rgba(242,139,130,0.85)',pointRadius:10},
+    {label:'AUS NBL',data:[{x:54.9,y:55}],backgroundColor:'rgba(245,200,66,0.75)',pointRadius:7},
+    {label:'Liga ACB',data:[{x:51.8,y:120}],backgroundColor:'rgba(245,200,66,0.75)',pointRadius:7},
+    {label:'Turkish BSL',data:[{x:28.2,y:90}],backgroundColor:'rgba(245,200,66,0.6)',pointRadius:7},
+    {label:'Korean KBL',data:[{x:14.5,y:40}],backgroundColor:'rgba(107,116,146,0.6)',pointRadius:5},
+    {label:'Japanese BL',data:[{x:12.4,y:75}],backgroundColor:'rgba(107,116,146,0.6)',pointRadius:5},
+  ]
+},{...base,scales:{x:{...ds.x,title:{display:true,text:'Transparency Score',color:'#6b7492',font:{size:11}}},y:{...ds.y,title:{display:true,text:'Market Value ($M)',color:'#6b7492',font:{size:11}}}},plugins:{legend:{display:false}}});
+
+// Union chart
+C('unionChart','bar',{
+  labels:['With Player Union (NBA, AUS NBL, ACB)','Without Player Union'],
+  datasets:[{label:'Avg Transparency Score',data:[68,17],backgroundColor:['rgba(94,200,135,0.75)','rgba(242,139,130,0.75)'],borderRadius:5,borderSkipped:false}]
+},{...base,scales:darkScales,plugins:{legend:{display:false}}});
+
+// Revenue chart
+C('revenueChart','scatter',{
+  datasets:[
+    {label:'Leagues',data:[{x:99.7,y:10800},{x:54.9,y:55},{x:51.8,y:120},{x:28.2,y:90},{x:14.5,y:40},{x:14.4,y:250},{x:12.4,y:75},{x:3.5,y:480}],backgroundColor:['rgba(94,200,135,0.8)','rgba(245,200,66,0.7)','rgba(245,200,66,0.7)','rgba(245,200,66,0.6)','rgba(107,116,146,0.6)','rgba(242,139,130,0.8)','rgba(107,116,146,0.6)','rgba(242,139,130,0.8)'],pointRadius:10,pointHoverRadius:12},
+  ]
+},{...base,scales:{x:{...ds.x,title:{display:true,text:'Transparency Score',color:'#6b7492',font:{size:11}}},y:{...ds.y,title:{display:true,text:'Revenue (USD millions)',color:'#6b7492',font:{size:11}}}},plugins:{legend:{display:false}}});
+
+// Sensitivity
+C('sensitivityChart','bar',{
+  labels:['NBA','AUS NBL','Liga ACB','Turkish BSL','Korean KBL','EuroLeague','Japan BL','CBA'],
+  datasets:[
+    {label:'Proposal (40/30/20/10)',data:[99.7,54.9,51.8,28.2,14.5,14.4,12.4,3.5],backgroundColor:'rgba(88,166,255,0.7)',borderRadius:2},
+    {label:'Equal (25/25/25/25)',data:[99.9,55.6,53.5,30.7,15.3,15.1,13.4,2.7],backgroundColor:'rgba(94,200,135,0.65)',borderRadius:2},
+    {label:'Policy-heavy (25/20/40/15)',data:[100,60.5,60.5,32.9,18.7,18.4,16.3,0],backgroundColor:'rgba(245,200,66,0.65)',borderRadius:2},
+    {label:'DB-dominant (70/10/15/5)',data:[99.5,51.1,46.9,21.5,11.3,10.8,9.3,2.8],backgroundColor:'rgba(192,132,252,0.65)',borderRadius:2},
+  ]
+},{...base,scales:darkScales});
+
+// Position chart
+C('positionChart','bar',{
+  labels:['PG','PF','SF','C','SG'],
+  datasets:[{label:'Avg Salary ($M)',data:[9.46,8.97,8.62,8.01,7.89],backgroundColor:['rgba(192,132,252,0.8)','rgba(88,166,255,0.75)','rgba(88,166,255,0.7)','rgba(88,166,255,0.65)','rgba(88,166,255,0.6)'],borderRadius:5,borderSkipped:false}]
+},{...base,scales:darkScales,plugins:{legend:{display:false}}});
+
+// Nationality chart
+C('natChart','bar',{
+  labels:['US','International'],
+  datasets:[
+    {label:'Mean',data:[6.77,8.46],backgroundColor:['rgba(88,166,255,0.75)','rgba(94,200,135,0.75)'],borderRadius:4,borderSkipped:false},
+    {label:'Median',data:[2.12,3.50],backgroundColor:['rgba(88,166,255,0.4)','rgba(94,200,135,0.4)'],borderRadius:4,borderSkipped:false}
+  ]
+},{...base,scales:darkScales,plugins:{legend:{labels:{color:'#6b7492',font:{size:11},boxWidth:10}}}});
+
+// Experience curve
+C('expChart','line',{
+  labels:['0–2 yrs','3–5 yrs','6–10 yrs','10+ yrs'],
+  datasets:[{label:'Avg Salary ($M)',data:[2.07,5.12,8.05,13.33],borderColor:'rgba(245,200,66,0.9)',backgroundColor:'rgba(245,200,66,0.08)',tension:0.4,pointRadius:5,fill:true}]
+},{...base,scales:darkScales,plugins:{legend:{display:false}}});
+
+// Top nationalities
+C('nationalityChart','bar',{
+  labels:['Cameroon','Lithuania','Switzerland','Serbia','Italy','Canada','Germany','Turkey','France','Australia'],
+  datasets:[{label:'Mean Salary ($M)',data:[21.5,13.5,13.3,11.7,10.1,8.9,8.5,8.9,7.2,7.0],backgroundColor:'rgba(192,132,252,0.7)',borderRadius:3,borderSkipped:false}]
+},{...base,indexAxis:'y',scales:darkScales,plugins:{legend:{display:false}}});
+
+// Model comparison
+C('modelCompChart','bar',{
+  labels:['Linear Regression','Ridge Regression','Random Forest'],
+  datasets:[{label:'R² Score',data:[0.368,0.368,0.728],backgroundColor:['rgba(242,139,130,0.7)','rgba(245,200,66,0.7)','rgba(94,200,135,0.8)'],borderRadius:5,borderSkipped:false}]
+},{...base,scales:{...darkScales,y:{...ds.y,max:1}},plugins:{legend:{display:false}}});
+
+// Lasso coefficients
+C('lassoChart','bar',{
+  labels:['Tier','Exp. bracket','PG','SG','PF','C','Age','is_US'],
+  datasets:[{label:'Lasso coefficient',data:[1.664,0.141,0.011,-0.063,-0.084,-0.143,-0.096,-0.012],backgroundColor:(ctx)=>ctx.raw>=0?'rgba(94,200,135,0.75)':'rgba(242,139,130,0.75)',borderRadius:3,borderSkipped:false}]
+},{...base,scales:darkScales,plugins:{legend:{display:false}}});
+</script>
+</body>
+</html>
