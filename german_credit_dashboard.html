@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>German Bank Credit Risk Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #181c24; --surface2: #1e2330; --border: rgba(255,255,255,0.07);
+    --text: #f0ede8; --muted: #7a8099; --dim: #4a5066;
+    --green: #3ecf8e; --green-dim: rgba(62,207,142,0.12);
+    --amber: #f5a623; --amber-dim: rgba(245,166,35,0.12);
+    --red: #e85c5c; --red-dim: rgba(232,92,92,0.12);
+    --blue: #4a90e2; --blue-dim: rgba(74,144,226,0.12);
+    --purple: #9b6fde; --purple-dim: rgba(155,111,222,0.12);
+    --teal: #3ecfc5; --teal-dim: rgba(62,207,197,0.12);
+    --sans: 'DM Sans', sans-serif; --serif: 'DM Serif Display', serif;
+    --r: 10px; --r-sm: 6px;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+
+  /* HEADER */
+  .header { padding: 1.5rem 2rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .header-left h1 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; color: var(--text); }
+  .header-left p { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+  .tab-bar { display: flex; gap: 0.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 0.25rem; }
+  .tab { padding: 0.35rem 0.9rem; border-radius: 4px; font-size: 0.78rem; cursor: pointer; color: var(--muted); border: none; background: none; font-family: var(--sans); transition: all 0.2s; letter-spacing: 0.03em; }
+  .tab.active { background: var(--surface2); color: var(--text); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* LAYOUT */
+  .page { display: none; padding: 1.5rem 2rem 2rem; }
+  .page.active { display: block; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .span2 { grid-column: span 2; }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.1rem 1.25rem; }
+  .card-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.6rem; }
+  .metric { font-size: 1.9rem; font-weight: 500; font-family: var(--serif); line-height: 1; }
+  .metric-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 100px; font-size: 0.7rem; font-weight: 500; }
+  .badge-green { background: var(--green-dim); color: var(--green); }
+  .badge-amber { background: var(--amber-dim); color: var(--amber); }
+  .badge-red { background: var(--red-dim); color: var(--red); }
+  .badge-blue { background: var(--blue-dim); color: var(--blue); }
+
+  /* CHART CONTAINERS */
+  .chart-wrap { position: relative; width: 100%; }
+  .chart-wrap canvas { max-width: 100%; }
+
+  /* SEGMENT CARDS */
+  .seg-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 1.25rem; position: relative; overflow: hidden; }
+  .seg-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .seg-0::before { background: var(--green); }
+  .seg-1::before { background: var(--purple); }
+  .seg-2::before { background: var(--teal); }
+  .seg-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .seg-0 .seg-label { color: var(--green); }
+  .seg-1 .seg-label { color: var(--purple); }
+  .seg-2 .seg-label { color: var(--teal); }
+  .seg-title { font-family: var(--serif); font-size: 1.05rem; margin-bottom: 0.9rem; }
+  .seg-stat { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .seg-stat:last-child { border-bottom: none; }
+  .seg-stat-label { color: var(--muted); }
+  .seg-stat-val { font-weight: 500; }
+
+  /* RISK BAR */
+  .risk-bar-wrap { display: flex; height: 8px; border-radius: 100px; overflow: hidden; margin: 0.5rem 0; }
+  .risk-seg { height: 100%; transition: width 0.5s ease; }
+
+  /* MODEL PERF TABLE */
+  .perf-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .perf-table th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 400; padding: 0.5rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+  .perf-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+  .perf-table tr:last-child td { border-bottom: none; }
+  .perf-bar { height: 5px; border-radius: 100px; background: var(--green); display: inline-block; vertical-align: middle; margin-right: 0.5rem; }
+
+  /* SCATTER SIMULATION */
+  .scatter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .scatter-cell { background: var(--surface2); border-radius: var(--r-sm); padding: 0.75rem; text-align: center; }
+  .scatter-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin: 0.15rem; }
+
+  /* RESPONSIVE */
+  @media (max-width: 680px) {
+    .grid-4, .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-2, .grid-3-1 { grid-template-columns: 1fr; }
+    .span2 { grid-column: span 1; }
+    .page { padding: 1rem; }
+    .header { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>German Bank Credit Risk Analysis</h1>
+    <p>ALY6080 &nbsp;·&nbsp; 1,000 applicant records &nbsp;·&nbsp; K-Means Clustering + SVM Classification</p>
+  </div>
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('overview')">Overview</button>
+    <button class="tab" onclick="showTab('segments')">Segments</button>
+    <button class="tab" onclick="showTab('risk')">Risk Model</button>
+    <button class="tab" onclick="showTab('features')">Features</button>
+  </div>
+</div>
+
+<!-- ── OVERVIEW ── -->
+<div class="page active" id="tab-overview">
+  <div class="grid-4">
+    <div class="card">
+      <div class="card-title">Total Applicants</div>
+      <div class="metric" style="color:var(--blue)">1,000</div>
+      <div class="metric-sub">German credit dataset</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Customer Segments</div>
+      <div class="metric" style="color:var(--green)">3</div>
+      <div class="metric-sub">K-Means · Silhouette 0.212</div>
+    </div>
+    <div class="card">
+      <div class="card-title">SVM Accuracy</div>
+      <div class="metric" style="color:var(--amber)">79%</div>
+      <div class="metric-sub">Linear kernel · 300 test records</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Median Credit</div>
+      <div class="metric" style="color:var(--purple)">2,319</div>
+      <div class="metric-sub">DM &nbsp;·&nbsp; Range: 250 – 18,424</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Risk level distribution</div>
+      <div class="risk-bar-wrap" id="riskBarMain"></div>
+      <div style="display:flex;gap:1.25rem;margin-top:0.75rem;">
+        <div><span class="badge badge-green">Low</span> <span style="color:var(--muted);font-size:0.8rem;">398 &nbsp;(39.8%)</span></div>
+        <div><span class="badge badge-amber">Medium</span> <span style="color:var(--muted);font-size:0.8rem;">587 &nbsp;(58.7%)</span></div>
+        <div><span class="badge badge-red">High</span> <span style="color:var(--muted);font-size:0.8rem;">15 &nbsp;(1.5%)</span></div>
+      </div>
+      <div class="chart-wrap" style="height:220px;margin-top:1.25rem;">
+        <canvas id="riskDonut"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Average credit amount by purpose</div>
+      <div class="chart-wrap" style="height:280px;">
+        <canvas id="purposeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Applicant age distribution</div>
+      <div class="chart-wrap" style="height:200px;">
+        <canvas id="ageChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Credit amount by job type</div>
+      <div class="chart-wrap" style="height:200px;">
+        <canvas id="jobChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SEGMENTS ── -->
+<div class="page" id="tab-segments">
+  <div class="grid-3" style="margin-bottom:1.25rem;">
+    <div class="seg-card seg-0">
+      <div class="seg-label">Cluster 0</div>
+      <div class="seg-title">Asset-Heavy Mature Borrowers</div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg age</span><span class="seg-stat-val">42.4 yrs</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Gender</span><span class="seg-stat-val">87% male</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg credit</span><span class="seg-stat-val">6,342 DM</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg duration</span><span class="seg-stat-val">31+ months</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Typical purpose</span><span class="seg-stat-val">Cars, Business</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Risk profile</span><span class="seg-stat-val"><span class="badge badge-green">Lower risk</span></span></div>
+    </div>
+    <div class="seg-card seg-1">
+      <div class="seg-label">Cluster 1</div>
+      <div class="seg-title">Young Independent Starters</div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg age</span><span class="seg-stat-val">~32 yrs</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Gender</span><span class="seg-stat-val">100% female</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg credit</span><span class="seg-stat-val">2,584 DM</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg duration</span><span class="seg-stat-val">~19 months</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Typical purpose</span><span class="seg-stat-val">Furniture, Electronics</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Risk profile</span><span class="seg-stat-val"><span class="badge badge-amber">Moderate</span></span></div>
+    </div>
+    <div class="seg-card seg-2">
+      <div class="seg-label">Cluster 2</div>
+      <div class="seg-title">Balanced Mid-Age Homeowners</div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg age</span><span class="seg-stat-val">~36 yrs</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Gender</span><span class="seg-stat-val">100% male</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg credit</span><span class="seg-stat-val">2,861 DM</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Avg duration</span><span class="seg-stat-val">~19 months</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Typical purpose</span><span class="seg-stat-val">Cars, Home goods</span></div>
+      <div class="seg-stat"><span class="seg-stat-label">Housing</span><span class="seg-stat-val">88% own home</span></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Avg credit amount by segment</div>
+      <div class="chart-wrap" style="height:240px;">
+        <canvas id="segCreditChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Avg loan duration by segment (months)</div>
+      <div class="chart-wrap" style="height:240px;">
+        <canvas id="segDurationChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Segment comparison — key attributes</div>
+    <div class="chart-wrap" style="height:260px;">
+      <canvas id="radarChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── RISK MODEL ── -->
+<div class="page" id="tab-risk">
+  <div class="grid-4" style="margin-bottom:1.25rem;">
+    <div class="card">
+      <div class="card-title">Overall accuracy</div>
+      <div class="metric" style="color:var(--green)">79%</div>
+      <div class="metric-sub">300 test records</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Weighted F1</div>
+      <div class="metric" style="color:var(--blue)">0.80</div>
+      <div class="metric-sub">Balanced by class size</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kernel</div>
+      <div class="metric" style="color:var(--purple)">Linear</div>
+      <div class="metric-sub">+30pt gain vs RBF</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Class weights</div>
+      <div class="metric" style="color:var(--teal)">Balanced</div>
+      <div class="metric-sub">Handles class imbalance</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Classification report</div>
+      <table class="perf-table">
+        <thead><tr><th>Class</th><th>Precision</th><th>Recall</th><th>F1</th><th>Support</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-green">Low</span></td>
+            <td><span class="perf-bar" style="width:48px;background:var(--green)"></span>80%</td>
+            <td><span class="perf-bar" style="width:49px;background:var(--green)"></span>82%</td>
+            <td style="color:var(--green);font-weight:500">0.80</td>
+            <td style="color:var(--muted)">119</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-amber">Medium</span></td>
+            <td><span class="perf-bar" style="width:52px;background:var(--amber)"></span>86%</td>
+            <td><span class="perf-bar" style="width:46px;background:var(--amber)"></span>77%</td>
+            <td style="color:var(--amber);font-weight:500">0.81</td>
+            <td style="color:var(--muted)">176</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">High</span></td>
+            <td><span class="perf-bar" style="width:14px;background:var(--red)"></span>24%</td>
+            <td><span class="perf-bar" style="width:60px;background:var(--red)"></span>100%</td>
+            <td style="color:var(--red);font-weight:500">0.38</td>
+            <td style="color:var(--muted)">5</td>
+          </tr>
+          <tr style="border-top: 1px solid var(--border);">
+            <td style="color:var(--muted)">Weighted avg</td>
+            <td style="color:var(--muted)">82%</td>
+            <td style="color:var(--muted)">79%</td>
+            <td style="font-weight:500">0.80</td>
+            <td style="color:var(--muted)">300</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Confusion matrix</div>
+      <div style="display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:0.35rem;font-size:0.78rem;align-items:center;margin-top:0.5rem;">
+        <div></div>
+        <div style="text-align:center;color:var(--muted);font-size:0.7rem;">Pred Low</div>
+        <div style="text-align:center;color:var(--muted);font-size:0.7rem;">Pred Med</div>
+        <div style="text-align:center;color:var(--muted);font-size:0.7rem;">Pred High</div>
+        <div style="color:var(--muted);font-size:0.7rem;writing-mode:horizontal-tb;padding-right:0.5rem;">Act Low</div>
+        <div style="background:rgba(62,207,142,0.25);border:1px solid rgba(62,207,142,0.3);border-radius:4px;padding:0.6rem;text-align:center;font-weight:500;color:var(--green)">97</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.6rem;text-align:center;color:var(--muted)">22</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.6rem;text-align:center;color:var(--dim)">0</div>
+        <div style="color:var(--muted);font-size:0.7rem;padding-right:0.5rem;">Act Med</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.6rem;text-align:center;color:var(--muted)">25</div>
+        <div style="background:rgba(245,166,35,0.25);border:1px solid rgba(245,166,35,0.3);border-radius:4px;padding:0.6rem;text-align:center;font-weight:500;color:var(--amber)">135</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.6rem;text-align:center;color:var(--muted)">16</div>
+        <div style="color:var(--muted);font-size:0.7rem;padding-right:0.5rem;">Act High</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.6rem;text-align:center;color:var(--dim)">0</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:0.6rem;text-align:center;color:var(--dim)">0</div>
+        <div style="background:rgba(232,92,92,0.25);border:1px solid rgba(232,92,92,0.3);border-radius:4px;padding:0.6rem;text-align:center;font-weight:500;color:var(--red)">5</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Precision vs recall by class</div>
+    <div class="chart-wrap" style="height:220px;">
+      <canvas id="perfChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<div class="page" id="tab-features">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Savings account distribution</div>
+      <div class="chart-wrap" style="height:230px;">
+        <canvas id="savingsChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Checking account distribution</div>
+      <div class="chart-wrap" style="height:230px;">
+        <canvas id="checkingChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Housing type distribution</div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="housingChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Credit amount by housing status (avg DM)</div>
+      <div class="chart-wrap" style="height:220px;">
+        <canvas id="housingCreditChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Key correlation insights</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.75rem;margin-top:0.25rem;">
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:0.85rem;">
+        <div style="font-size:0.7rem;color:var(--green);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Strongest predictor</div>
+        <div style="font-weight:500;margin-bottom:0.2rem;">Savings account status</div>
+        <div style="font-size:0.78rem;color:var(--muted)">Strong negative correlation with default risk</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:0.85rem;">
+        <div style="font-size:0.7rem;color:var(--blue);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Second predictor</div>
+        <div style="font-weight:500;margin-bottom:0.2rem;">Checking account status</div>
+        <div style="font-size:0.78rem;color:var(--muted)">Negative correlation — richer accounts = lower risk</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:0.85rem;">
+        <div style="font-size:0.7rem;color:var(--amber);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Weak predictor</div>
+        <div style="font-weight:500;margin-bottom:0.2rem;">Job type</div>
+        <div style="font-size:0.78rem;color:var(--muted)">Near-zero correlation with risk level once other features controlled</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:0.85rem;">
+        <div style="font-size:0.7rem;color:var(--purple);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.3rem;">Duration effect</div>
+        <div style="font-weight:500;margin-bottom:0.2rem;">Loan duration × credit amount</div>
+        <div style="font-size:0.78rem;color:var(--muted)">Longer terms strongly associated with higher credit amounts</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tab switching
+  function showTab(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Risk bar
+  const rb = document.getElementById('riskBarMain');
+  rb.innerHTML = '<div class="risk-seg" style="width:39.8%;background:var(--green)"></div><div class="risk-seg" style="width:58.7%;background:var(--amber)"></div><div class="risk-seg" style="width:1.5%;background:var(--red)"></div>';
+
+  const C = (id, type, data, options) => {
+    const ctx = document.getElementById(id).getContext('2d');
+    return new Chart(ctx, { type, data, options });
+  };
+
+  const base = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#7a8099', font: { family: "'DM Sans', sans-serif", size: 11 }, boxWidth: 10, padding: 12 } } },
+    scales: {}
+  };
+  const darkScales = {
+    x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7a8099', font: { family: "'DM Sans', sans-serif", size: 11 } }, border: { color: 'rgba(255,255,255,0.06)' } },
+    y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7a8099', font: { family: "'DM Sans', sans-serif", size: 11 } }, border: { color: 'rgba(255,255,255,0.06)' } }
+  };
+
+  // Risk donut
+  C('riskDonut', 'doughnut', {
+    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+    datasets: [{ data: [398, 587, 15], backgroundColor: ['rgba(62,207,142,0.8)', 'rgba(245,166,35,0.8)', 'rgba(232,92,92,0.8)'], borderColor: ['#0f1117'], borderWidth: 2, hoverOffset: 6 }]
+  }, { ...base, cutout: '68%', plugins: { legend: { position: 'right', labels: { color: '#7a8099', font: { family: "'DM Sans'", size: 11 }, padding: 14 } } } });
+
+  // Purpose chart
+  C('purposeChart', 'bar', {
+    labels: ['Car', 'Radio/TV', 'Furniture', 'Business', 'Education', 'Repairs', 'Appliances', 'Vacation'],
+    datasets: [{ label: 'Avg Credit (DM)', data: [3768, 2488, 3067, 4158, 2879, 2728, 1498, 8209], backgroundColor: ['rgba(74,144,226,0.7)','rgba(74,144,226,0.55)','rgba(74,144,226,0.55)','rgba(155,111,222,0.7)','rgba(74,144,226,0.55)','rgba(74,144,226,0.55)','rgba(74,144,226,0.4)','rgba(62,207,197,0.8)'], borderRadius: 4, borderSkipped: false }]
+  }, { ...base, scales: darkScales, plugins: { legend: { display: false } } });
+
+  // Age distribution
+  C('ageChart', 'bar', {
+    labels: ['15–20','20–25','25–30','30–35','35–40','40–45','45–50','50–55','55–60','60–65','65–70','70+'],
+    datasets: [{ label: 'Applicants', data: [30,210,171,137,153,81,67,55,28,23,27,18], backgroundColor: 'rgba(155,111,222,0.65)', borderRadius: 3, borderSkipped: false }]
+  }, { ...base, scales: darkScales, plugins: { legend: { display: false } } });
+
+  // Job chart
+  C('jobChart', 'bar', {
+    labels: ['Highly Skilled', 'Skilled', 'Unskilled Resident', 'Unskilled Non-Res'],
+    datasets: [{ label: 'Avg Credit (DM)', data: [5435, 3071, 2359, 2745], backgroundColor: ['rgba(62,207,142,0.8)','rgba(62,207,142,0.65)','rgba(62,207,142,0.45)','rgba(62,207,142,0.45)'], borderRadius: 4, borderSkipped: false }]
+  }, { ...base, scales: { ...darkScales, x: { ...darkScales.x, ticks: { color: '#7a8099', font: { size: 10 } } } }, plugins: { legend: { display: false } } });
+
+  // Segment credit
+  C('segCreditChart', 'bar', {
+    labels: ['Cluster 0\nMature Borrowers', 'Cluster 1\nYoung Starters', 'Cluster 2\nHomeowners'],
+    datasets: [{ label: 'Avg Credit (DM)', data: [6342, 2584, 2861], backgroundColor: ['rgba(62,207,142,0.75)', 'rgba(155,111,222,0.75)', 'rgba(62,207,197,0.75)'], borderRadius: 6, borderSkipped: false }]
+  }, { ...base, scales: darkScales, plugins: { legend: { display: false } } });
+
+  // Segment duration
+  C('segDurationChart', 'bar', {
+    labels: ['Cluster 0', 'Cluster 1', 'Cluster 2'],
+    datasets: [{ label: 'Avg Duration (months)', data: [31, 19, 19], backgroundColor: ['rgba(62,207,142,0.75)', 'rgba(155,111,222,0.75)', 'rgba(62,207,197,0.75)'], borderRadius: 6, borderSkipped: false }]
+  }, { ...base, scales: darkScales, plugins: { legend: { display: false } } });
+
+  // Radar
+  C('radarChart', 'radar', {
+    labels: ['Avg Age', 'Avg Credit', 'Loan Duration', 'Account Strength', 'Asset Ownership'],
+    datasets: [
+      { label: 'Cluster 0 — Mature', data: [85, 90, 80, 65, 80], borderColor: 'rgba(62,207,142,0.9)', backgroundColor: 'rgba(62,207,142,0.1)', pointBackgroundColor: 'rgba(62,207,142,0.9)', pointRadius: 3 },
+      { label: 'Cluster 1 — Young', data: [55, 38, 45, 40, 35], borderColor: 'rgba(155,111,222,0.9)', backgroundColor: 'rgba(155,111,222,0.1)', pointBackgroundColor: 'rgba(155,111,222,0.9)', pointRadius: 3 },
+      { label: 'Cluster 2 — Homeowners', data: [65, 42, 45, 60, 88], borderColor: 'rgba(62,207,197,0.9)', backgroundColor: 'rgba(62,207,197,0.1)', pointBackgroundColor: 'rgba(62,207,197,0.9)', pointRadius: 3 }
+    ]
+  }, { ...base, scales: { r: { grid: { color: 'rgba(255,255,255,0.06)' }, angleLines: { color: 'rgba(255,255,255,0.06)' }, pointLabels: { color: '#7a8099', font: { size: 11, family: "'DM Sans'" } }, ticks: { display: false } } }, plugins: { legend: { labels: { color: '#7a8099', font: { size: 11 } } } } });
+
+  // Perf chart
+  C('perfChart', 'bar', {
+    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+    datasets: [
+      { label: 'Precision', data: [80, 86, 24], backgroundColor: 'rgba(74,144,226,0.75)', borderRadius: 4, borderSkipped: false },
+      { label: 'Recall', data: [82, 77, 100], backgroundColor: 'rgba(62,207,142,0.75)', borderRadius: 4, borderSkipped: false },
+      { label: 'F1-Score ×100', data: [80, 81, 38], backgroundColor: 'rgba(155,111,222,0.75)', borderRadius: 4, borderSkipped: false }
+    ]
+  }, { ...base, scales: { ...darkScales, y: { ...darkScales.y, max: 110 } } });
+
+  // Savings
+  C('savingsChart', 'doughnut', {
+    labels: ['Little', 'Moderate', 'Quite Rich', 'Rich', 'Unknown'],
+    datasets: [{ data: [603, 103, 63, 48, 183], backgroundColor: ['rgba(232,92,92,0.75)','rgba(245,166,35,0.75)','rgba(62,207,142,0.75)','rgba(74,144,226,0.75)','rgba(120,128,153,0.6)'], borderColor: '#0f1117', borderWidth: 2, hoverOffset: 5 }]
+  }, { ...base, cutout: '60%', plugins: { legend: { position: 'right', labels: { color: '#7a8099', font: { size: 11 }, padding: 10 } } } });
+
+  // Checking
+  C('checkingChart', 'doughnut', {
+    labels: ['Little', 'Moderate', 'No Account', 'Rich'],
+    datasets: [{ data: [274, 269, 394, 63], backgroundColor: ['rgba(232,92,92,0.75)','rgba(245,166,35,0.75)','rgba(120,128,153,0.6)','rgba(74,144,226,0.75)'], borderColor: '#0f1117', borderWidth: 2, hoverOffset: 5 }]
+  }, { ...base, cutout: '60%', plugins: { legend: { position: 'right', labels: { color: '#7a8099', font: { size: 11 }, padding: 10 } } } });
+
+  // Housing distribution
+  C('housingChart', 'bar', {
+    labels: ['Own', 'Rent', 'Free (family)'],
+    datasets: [{ label: 'Applicants', data: [713, 179, 108], backgroundColor: ['rgba(62,207,142,0.75)','rgba(245,166,35,0.75)','rgba(74,144,226,0.65)'], borderRadius: 5, borderSkipped: false }]
+  }, { ...base, scales: darkScales, plugins: { legend: { display: false } } });
+
+  // Housing credit
+  C('housingCreditChart', 'bar', {
+    labels: ['Own', 'Rent', 'Free (family)'],
+    datasets: [{ label: 'Avg Credit (DM)', data: [3061, 3123, 4906], backgroundColor: ['rgba(62,207,142,0.75)','rgba(245,166,35,0.75)','rgba(74,144,226,0.65)'], borderRadius: 5, borderSkipped: false }]
+  }, { ...base, scales: darkScales, plugins: { legend: { display: false } } });
+</script>
+</body>
+</html>
