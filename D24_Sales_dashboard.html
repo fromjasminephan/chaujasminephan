@@ -1,530 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>D24 Sales Dashboard – Jasmine Phan</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --navy: #1a2744;
-      --teal: #2a9d8f;
-      --teal-light: #e8f5f3;
-      --gold: #e9c46a;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --white: #ffffff;
-      --bg: #f0f4f8;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
-
-    /* HEADER */
-    header {
-      background: var(--navy);
-      padding: 1.2rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header h1 { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--white); font-weight: 400; }
-    header a { color: rgba(255,255,255,0.6); font-size: 0.8rem; text-decoration: none; }
-    header a:hover { color: var(--gold); }
-
-    /* TABS */
-    .tabs {
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      padding: 0 2rem;
-      overflow-x: auto;
-      gap: 0;
-    }
-    .tab-btn {
-      padding: 1rem 1.4rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--muted);
-      border: none;
-      background: none;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
-    .tab-btn:hover:not(.active) { color: var(--navy); }
-
-    /* PANELS */
-    .panel { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; }
-    .panel.active { display: block; }
-
-    /* KPI ROW */
-    .kpi-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .kpi {
-      background: var(--white);
-      border-radius: 12px;
-      padding: 1.2rem 1.4rem;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    .kpi .num {
-      font-family: 'DM Serif Display', serif;
-      font-size: 2rem;
-      color: var(--navy);
-      line-height: 1;
-    }
-    .kpi .num span { font-size: 1.1rem; color: var(--teal); }
-    .kpi .lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-top: 0.4rem; }
-
-    /* CHART GRID */
-    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
-    @media (max-width: 700px) { .chart-grid { grid-template-columns: 1fr; } }
-
-    .chart-card {
-      background: var(--white);
-      border-radius: 14px;
-      padding: 1.6rem;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-    .chart-card.full { grid-column: 1 / -1; }
-    .chart-card h3 {
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--navy);
-      margin-bottom: 1.2rem;
-    }
-    canvas { width: 100% !important; max-height: 260px; }
-
-    /* INSIGHT BOXES */
-    .insight-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
-    .insight {
-      border-left: 4px solid var(--teal);
-      padding: 1rem 1.2rem;
-      background: var(--teal-light);
-      border-radius: 0 10px 10px 0;
-    }
-    .insight.gold { border-left-color: var(--gold); background: #fef9ec; }
-    .insight.navy { border-left-color: var(--navy); background: #e8edf5; }
-    .insight strong { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); margin-bottom: 0.2rem; }
-    .insight.gold strong { color: #c9960a; }
-    .insight.navy strong { color: var(--navy); }
-    .insight p { font-size: 0.875rem; color: var(--text); }
-
-    /* TABLE */
-    .table-wrap { overflow-x: auto; margin-top: 1rem; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    th { background: var(--navy); color: var(--white); padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-    td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-    tr:hover td { background: var(--teal-light); }
-
-    /* BADGE */
-    .badge {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      border-radius: 999px;
-      font-size: 0.7rem;
-      font-weight: 700;
-    }
-    .badge.red { background: #fee2e2; color: #b91c1c; }
-    .badge.green { background: #dcfce7; color: #15803d; }
-    .badge.yellow { background: #fef9c3; color: #854d0e; }
-
-    /* HEATMAP */
-    .heatmap-grid {
-      display: grid;
-      grid-template-columns: 120px repeat(9, 1fr);
-      gap: 3px;
-      font-size: 0.65rem;
-      overflow-x: auto;
-    }
-    .hm-header { background: none; font-weight: 700; color: var(--muted); display: flex; align-items: flex-end; justify-content: center; padding: 0.3rem; writing-mode: vertical-lr; transform: rotate(180deg); height: 80px; }
-    .hm-row-label { font-weight: 600; color: var(--navy); display: flex; align-items: center; font-size: 0.6rem; }
-    .hm-cell {
-      display: flex; align-items: center; justify-content: center;
-      height: 40px; border-radius: 4px; font-weight: 700; font-size: 0.65rem;
-      color: var(--white);
-    }
-
-    /* BRAND TREEMAP (CSS-based) */
-    .treemap { display: flex; flex-wrap: wrap; gap: 4px; height: 220px; align-content: flex-start; }
-    .tm-block {
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: var(--white);
-      font-weight: 700;
-      font-size: 0.75rem;
-      cursor: default;
-      transition: opacity 0.2s;
-    }
-    .tm-block:hover { opacity: 0.85; }
-    .tm-block small { font-size: 0.6rem; font-weight: 400; opacity: 0.8; }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>D24 Sales Analysis — Jasmine Phan</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#1a1814;--ink-mid:#4a4640;--ink-light:#8a8480;--cream:#f5f2ec;--cream-warm:#ede8df;--white:#fff;--accent:#c85c38;--accent-light:#f0d4c8;--teal:#2a6b64;--teal-light:#d0e8e6;--purple:#5540c0;--purple-light:#e8e4f8;--rule:rgba(26,24,20,0.10);--sans:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;}
+body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.7;font-size:16px;}
+nav{background:var(--cream);border-bottom:1px solid var(--rule);padding:0 clamp(1.5rem,6vw,5rem);display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.logo{font-family:var(--serif);font-size:1.05rem;text-decoration:none;color:var(--ink);}
+.back-link{display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:var(--ink-mid);font-size:0.85rem;transition:color 0.2s;}
+.back-link:hover{color:var(--accent);}
+.page{max-width:900px;margin:0 auto;padding:3rem clamp(1.5rem,6vw,3rem) 5rem;}
+.tag-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.25rem;}
+.tag{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.22rem 0.65rem;border-radius:100px;font-weight:500;}
+.tag-teal{background:var(--teal-light);color:var(--teal);}
+.tag-coral{background:var(--accent-light);color:var(--accent);}
+.tag-purple{background:var(--purple-light);color:var(--purple);}
+.tag-green{background:#d8f0e0;color:#1a5e32;}
+h1{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);line-height:1.2;margin-bottom:0.5rem;}
+.meta{font-size:0.88rem;color:var(--ink-light);margin-bottom:2.5rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
+.meta span{display:flex;align-items:center;gap:0.35rem;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:3rem;}
+.stat-box{background:white;border:1px solid var(--rule);border-radius:10px;padding:1.25rem;text-align:center;}
+.stat-box .num{font-family:var(--serif);font-size:1.6rem;color:var(--accent);display:block;}
+.stat-box .lbl{font-size:0.72rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3rem;}
+.section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
+.section p{font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.section ul{padding-left:1.1rem;font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.section ul li{margin-bottom:0.3rem;}
+.divider{border:none;border-top:1px solid var(--rule);margin:2.5rem 0;}
+.full-section{margin-bottom:2.5rem;}
+.full-section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
+.full-section p{font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
+.tech-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
+.chip{background:white;border:1px solid var(--rule);padding:0.28rem 0.75rem;border-radius:4px;font-size:0.8rem;color:var(--ink-mid);}
+.dash-section{margin-top:3rem;}
+.dash-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-bottom:0.75rem;}
+.dash-title{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.5rem;}
+.dash-sub{font-size:0.85rem;color:var(--ink-mid);font-weight:300;margin-bottom:1.25rem;}
+.browser-bar{background:#1a1814;padding:0.55rem 1rem;display:flex;align-items:center;gap:0.5rem;border-radius:10px 10px 0 0;}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.browser-file{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-left:0.75rem;}
+.iframe-wrap{border:1px solid var(--rule);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.two-col{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
-
-<header>
-  <h1>D24 Sales Dashboard</h1>
-  <a href="project-credit.html">← Back to Project</a>
-</header>
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
-  <button class="tab-btn" onclick="showTab('brands')">Brand Analysis</button>
-  <button class="tab-btn" onclick="showTab('regional')">Regional Sales</button>
-  <button class="tab-btn" onclick="showTab('removal')">Inventory Scoring</button>
-</div>
-
-<!-- TAB 1: OVERVIEW -->
-<div id="tab-overview" class="panel active">
-  <div class="kpi-row">
-    <div class="kpi"><div class="num">19<span> brands</span></div><div class="lbl">Identified in dataset</div></div>
-    <div class="kpi"><div class="num">96<span>%</span></div><div class="lbl">Top 3 brand sales share</div></div>
-    <div class="kpi"><div class="num">$200<span>M+</span></div><div class="lbl">EC region revenue</div></div>
-    <div class="kpi"><div class="num">0.79</div><div class="lbl">Sales qty ↔ Revenue r</div></div>
-    <div class="kpi"><div class="num">Nov<span> '18</span></div><div class="lbl">Peak sales month</div></div>
+<nav>
+  <a href="index.html" class="logo">Jasmine Phan</a>
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+</nav>
+<div class="page">
+  <div class="tag-row">
+    <span class="tag tag-teal">Data Visualization</span>
+    <span class="tag tag-coral">Retail Analytics</span>
+    <span class="tag tag-purple">ALY 6070 · 2025</span>
+  </div>
+  <h1>Analysis of D24 Sales Data</h1>
+  <div class="meta">
+    <span>📅 Completed: March 2025</span>
+    <span>🏛️ Northeastern University, Seattle</span>
+    <span>⏱️ Course: ALY 6070</span>
   </div>
 
-  <div class="chart-grid">
-    <div class="chart-card">
-      <h3>Sales Trend Over Time</h3>
-      <canvas id="trendChart"></canvas>
+  <div class="stats">
+    <div class="stat-box"><span class="num">19</span><span class="lbl">Brands identified</span></div>
+    <div class="stat-box"><span class="num">96%</span><span class="lbl">Top 3 brand share</span></div>
+    <div class="stat-box"><span class="num">$200M+</span><span class="lbl">EC region revenue</span></div>
+    <div class="stat-box"><span class="num">5</span><span class="lbl">Items flagged for removal</span></div>
+  </div>
+
+  <div class="full-section">
+    <h2>Business problem</h2>
+    <p>A warehouse-style retailer needed a clearer picture of its sales landscape — which regions drove the most revenue, which brands were actually performing, and which products were silently dragging down inventory efficiency. The raw dataset required significant feature engineering before any of that was possible, with the ultimate goal of delivering data-driven recommendations on which items to cut.</p>
+    <p>I handled the project end-to-end: engineering three new features (BRAND, CATEGORY, Owner) out of raw item descriptions, building correlation studies and a time-series trend analysis in Python, running chi-square tests to assess brand-geography associations, and designing a multi-factor inventory removal scoring model in Tableau that identified the top 5 underperforming items.</p>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="two-col">
+    <div class="section">
+      <h2>Analytical approach</h2>
+      <ul>
+        <li>Standardized date fields and data types; introduced BRAND, CATEGORY, Owner as enrichment columns</li>
+        <li>Filtered recalled items and return-only records to ensure clean brand-level comparisons</li>
+        <li>Correlation heatmap across 9 features — confirmed sales qty ↔ revenue (r = 0.79)</li>
+        <li>Chi-square test across STATE, REGION, CITY, DISTRICT, LCNAME — all p = 0.000; Cramér's V ≤ 0.065</li>
+        <li>Removal score = weighted penalty for high return rate (20–50% band), low unit price, and low sales volume</li>
+        <li>Scoped removal analysis to HP, DELL, LENOVO to preserve overall brand diversity</li>
+      </ul>
     </div>
-    <div class="chart-card">
-      <h3>Correlation Heatmap (Key Variables)</h3>
-      <div class="heatmap-grid" id="heatmapGrid"></div>
+    <div class="section">
+      <h2>Key findings</h2>
+      <ul>
+        <li>November 2018 sales spiked ~3.7× above baseline — driven by Black Friday and holiday promotions</li>
+        <li>EC region generated $200M+, more than all other regions combined</li>
+        <li>HP, DELL, LENOVO accounted for 96% of total sales with low refund rates of 13.5–15.0%</li>
+        <li>ASUS and ACER showed 20%+ refund rates despite low volume — signaling quality or expectation mismatches</li>
+        <li>Brand-geography correlation is statistically significant but practically negligible (Cramér's V &lt; 0.07)</li>
+        <li>Some items showed &gt;100% return rates — a data timing artifact flagged as a methodology caveat</li>
+      </ul>
     </div>
   </div>
 
-  <div class="insight-row" style="margin-top:1.2rem">
-    <div class="insight">
-      <strong>Seasonal Peak</strong>
-      <p>November 2018 spike likely driven by Black Friday & holiday promotions — sales jumped ~3.7× vs. Oct baseline.</p>
-    </div>
-    <div class="insight gold">
-      <strong>Strong Core Correlation</strong>
-      <p>Sales quantity and revenue show a strong relationship (r = 0.79), confirming consistent per-unit pricing at scale.</p>
-    </div>
-    <div class="insight navy">
-      <strong>Fiscal Period: Weak Signal</strong>
-      <p>Fiscal period and item number show minimal correlation with total sales — not key drivers of revenue performance.</p>
-    </div>
-  </div>
-</div>
+  <hr class="divider"/>
 
-<!-- TAB 2: BRANDS -->
-<div id="tab-brands" class="panel">
-  <div class="kpi-row">
-    <div class="kpi"><div class="num">HP</div><div class="lbl">#1 by sales volume</div></div>
-    <div class="kpi"><div class="num">13.5<span>%</span></div><div class="lbl">HP refund rate</div></div>
-    <div class="kpi"><div class="num">20.5<span>%</span></div><div class="lbl">ACER refund rate</div></div>
-    <div class="kpi"><div class="num">0.061</div><div class="lbl">Brand-Region Cramér's V</div></div>
-  </div>
-  <div class="chart-grid">
-    <div class="chart-card">
-      <h3>Top 5 Brands — Sales vs. Refunds</h3>
-      <canvas id="brandBar"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Brand Market Share (Sales Qty)</h3>
-      <canvas id="brandPie"></canvas>
-    </div>
-    <div class="chart-card full">
-      <h3>Brand Distribution by Membership (Proportional)</h3>
-      <div class="treemap" id="treemap"></div>
+  <div class="full-section">
+    <h2>Technical stack</h2>
+    <div class="tech-list">
+      <span class="chip">Python</span><span class="chip">pandas</span><span class="chip">matplotlib</span><span class="chip">Tableau</span><span class="chip">Chi-Square Testing</span><span class="chip">Cramér's V</span><span class="chip">chardet</span><span class="chip">Jupyter</span>
     </div>
   </div>
-  <div class="insight-row">
-    <div class="insight">
-      <strong>HP & DELL Lead</strong>
-      <p>Both achieve 2× the sales of LENOVO, while maintaining some of the lowest refund rates in the dataset.</p>
+
+  <div class="dash-section">
+    <div class="dash-label">Interactive dashboard</div>
+    <h2 class="dash-title">D24 Sales Dashboard</h2>
+    <p class="dash-sub">Four tabs covering Overview, Brand Analysis, Regional Sales, and the Inventory Scoring model — with live charts and a removal scoring breakdown.</p>
+    <div class="browser-bar">
+      <span class="dot" style="background:#ff5f57;"></span>
+      <span class="dot" style="background:#febc2e;"></span>
+      <span class="dot" style="background:#28c840;"></span>
+      <span class="browser-file">D24_Sales_dashboard.html</span>
     </div>
-    <div class="insight gold">
-      <strong>ASUS & ACER Risk</strong>
-      <p>20%+ refund rates despite lower volumes — signals quality concerns or customer expectation mismatches.</p>
-    </div>
-    <div class="insight navy">
-      <strong>Geography ≠ Brand Choice</strong>
-      <p>Chi-square tests found statistically significant but practically weak geographic effects (Cramér's V ≤ 0.065).</p>
+    <div class="iframe-wrap">
+      <iframe src="D24_Sales_dashboard.html" style="width:100%;height:800px;border:none;display:block;" loading="lazy"></iframe>
     </div>
   </div>
 </div>
-
-<!-- TAB 3: REGIONAL -->
-<div id="tab-regional" class="panel">
-  <div class="kpi-row">
-    <div class="kpi"><div class="num">EC</div><div class="lbl">Top region by revenue</div></div>
-    <div class="kpi"><div class="num">$215<span>M</span></div><div class="lbl">EC region total</div></div>
-    <div class="kpi"><div class="num">10</div><div class="lbl">Regions analyzed</div></div>
-    <div class="kpi"><div class="num">3.5×</div><div class="lbl">EC vs. avg other regions</div></div>
-  </div>
-  <div class="chart-grid">
-    <div class="chart-card full">
-      <h3>Total Sales by Region ($M)</h3>
-      <canvas id="regionBar" style="max-height:300px"></canvas>
-    </div>
-  </div>
-  <div class="insight-row">
-    <div class="insight"><strong>EC Dominance</strong><p>EC region contributes more than all other regions combined, suggesting concentrated market demand and higher purchasing power.</p></div>
-    <div class="insight gold"><strong>Low-Performing Regions</strong><p>BD, TE, BA, and SD face challenges in customer reach or purchasing power — potential for targeted marketing investment.</p></div>
-    <div class="insight navy"><strong>NW & NE Mid-Tier</strong><p>NW and NE show moderate performance and may represent growth opportunities relative to their population bases.</p></div>
-  </div>
-</div>
-
-<!-- TAB 4: REMOVAL SCORING -->
-<div id="tab-removal" class="panel">
-  <div class="kpi-row">
-    <div class="kpi"><div class="num">3</div><div class="lbl">Brands evaluated</div></div>
-    <div class="kpi"><div class="num">5</div><div class="lbl">Items flagged</div></div>
-    <div class="kpi"><div class="num">20<span>%</span></div><div class="lbl">Return rate threshold</div></div>
-    <div class="kpi"><div class="num">50<span>%</span></div><div class="lbl">Max deduction trigger</div></div>
-  </div>
-  <div class="chart-grid">
-    <div class="chart-card full">
-      <h3>Top 5 Removal Candidates — Sales vs. Refund Quantities</h3>
-      <canvas id="removalChart" style="max-height:320px"></canvas>
-    </div>
-  </div>
-  <div class="chart-card" style="margin-top:1.2rem">
-    <h3>Removal Scoring Detail</h3>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Brand</th>
-            <th>Unit Price</th>
-            <th>Sales Qty</th>
-            <th>Return Rate</th>
-            <th>Removal Score</th>
-            <th>Risk Level</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>15-CS1063CL 15.6" LT</td>
-            <td>HP</td>
-            <td>$569.99</td>
-            <td>10</td>
-            <td>—</td>
-            <td>95</td>
-            <td><span class="badge red">High</span></td>
-          </tr>
-          <tr>
-            <td>132 WN71 LT A8-7410</td>
-            <td>HP</td>
-            <td>$400.00</td>
-            <td>5</td>
-            <td>—</td>
-            <td>90</td>
-            <td><span class="badge red">High</span></td>
-          </tr>
-          <tr>
-            <td>PAV 15-F 4500U/5.5in</td>
-            <td>HP</td>
-            <td>$609.00</td>
-            <td>5</td>
-            <td>—</td>
-            <td>88</td>
-            <td><span class="badge red">High</span></td>
-          </tr>
-          <tr>
-            <td>FLEx9 5.34" LT</td>
-            <td>LENOVO</td>
-            <td>$799.99</td>
-            <td>28</td>
-            <td>~11%</td>
-            <td>72</td>
-            <td><span class="badge yellow">Medium</span></td>
-          </tr>
-          <tr>
-            <td>TXG 55 11703/41+128</td>
-            <td>LENOVO</td>
-            <td>$863.84</td>
-            <td>28</td>
-            <td>~7%</td>
-            <td>68</td>
-            <td><span class="badge yellow">Medium</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="insight-row">
-    <div class="insight"><strong>Scoring Logic</strong><p>Return rate (20–50% range = 5–35 pts), unit price (under $1000 = up to 20 pts), and sales qty (under 45 = up to 45 pts) — all inverted so higher score = worse performer.</p></div>
-    <div class="insight gold"><strong>Return Rate Caveat</strong><p>Some items showed &gt;100% return rates — a data artifact where returns from prior periods appear in current sales windows.</p></div>
-    <div class="insight navy"><strong>Diversity Preserved</strong><p>Analysis limited to HP, DELL, LENOVO to avoid eliminating lower-volume brands whose removal would harm overall brand diversity.</p></div>
-  </div>
-</div>
-
-<script>
-  // Tab switching
-  function showTab(id) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + id).classList.add('active');
-    event.target.classList.add('active');
-  }
-
-  const fontFamily = 'DM Sans';
-  const gridColor = '#f1f5f9';
-
-  // TREND
-  new Chart(document.getElementById('trendChart'), {
-    type: 'line',
-    data: {
-      labels: ["Sep '18","Oct '18","Nov '18","Dec '18","Jan '19","Feb '19","Mar '19"],
-      datasets: [{
-        label: 'Sales ($M)',
-        data: [42, 38, 142, 81, 47, 59, 38],
-        borderColor: '#2a9d8f', backgroundColor: 'rgba(42,157,143,0.1)',
-        borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#2a9d8f',
-        fill: true, tension: 0.35
-      }]
-    },
-    options: {
-      responsive: true, plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { family: fontFamily, size: 10 } } },
-        y: { grid: { color: gridColor }, ticks: { font: { family: fontFamily, size: 10 }, callback: v => '$'+v+'M' } }
-      }
-    }
-  });
-
-  // HEATMAP (simplified visual)
-  const heatVars = ['SQ','Sales$','TxN','RegN','Whse','FiscP','ItemN','MbrIPK','AccType'];
-  const heatData = [
-    [1.00, 0.79, 0.05, 0.04, 0.02, 0.01, 0.01, 0.01, 0.01],
-    [0.79, 1.00, 0.11, 0.08, 0.04, 0.00, 0.02, 0.01, 0.02],
-    [0.05, 0.11, 1.00, 0.83, 0.28, 0.02, 0.08, 0.01, -0.02],
-    [0.04, 0.08, 0.83, 1.00, 0.30, 0.02, 0.09, 0.01, -0.02],
-    [0.02, 0.04, 0.28, 0.30, 1.00, 0.01, 0.04, 0.13, -0.05],
-    [0.01, 0.00, 0.02, 0.02, 0.01, 1.00, 0.09, 0.02, 0.00],
-    [0.01, 0.02, 0.08, 0.09, 0.04, 0.09, 1.00, 0.00, -0.01],
-    [0.01, 0.01, 0.01, 0.01, 0.13, 0.02, 0.00, 1.00, -0.19],
-    [0.01, 0.02, -0.02, -0.02, -0.05, 0.00, -0.01, -0.19, 1.00]
-  ];
-  const hg = document.getElementById('heatmapGrid');
-  hg.innerHTML = '<div></div>' + heatVars.map(v => `<div class="hm-header">${v}</div>`).join('');
-  heatVars.forEach((row, i) => {
-    hg.innerHTML += `<div class="hm-row-label">${row}</div>`;
-    heatData[i].forEach(val => {
-      const abs = Math.abs(val);
-      const r = val > 0 ? Math.round(40 + abs * 170) : 40;
-      const g = val > 0 ? Math.round(40 + (1-abs) * 130) : Math.round(40 + (1-abs)*130);
-      const b = val < 0 ? Math.round(80 + abs * 170) : 60;
-      const bg = val === 1 ? '#1a2744' : `rgb(${r},${g},${b})`;
-      hg.innerHTML += `<div class="hm-cell" style="background:${bg}; opacity:${0.5 + abs*0.5}">${val.toFixed(2)}</div>`;
-    });
-  });
-
-  // BRAND BAR
-  new Chart(document.getElementById('brandBar'), {
-    type: 'bar',
-    data: {
-      labels: ['HP','DELL','LENOVO','ASUS','ACER'],
-      datasets: [
-        { label: 'Completed Sales', data: [301725, 261420, 112380, 28450, 26890], backgroundColor: '#2a9d8f', borderRadius: 4 },
-        { label: 'Refunded', data: [40733, 36599, 16857, 5747, 5512], backgroundColor: '#e9c46a', borderRadius: 4 }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { position: 'bottom', labels: { font: { family: fontFamily, size: 11 } } } },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { family: fontFamily } } },
-        y: { grid: { color: gridColor }, ticks: { font: { family: fontFamily }, callback: v => v>=1000?(v/1000)+'k':v } }
-      }
-    }
-  });
-
-  // BRAND PIE
-  new Chart(document.getElementById('brandPie'), {
-    type: 'doughnut',
-    data: {
-      labels: ['HP','DELL','LENOVO','ASUS','ACER','Others'],
-      datasets: [{ data: [43, 37, 16, 2, 2, 0], backgroundColor: ['#1a2744','#2a9d8f','#e9c46a','#94b8c8','#c8d8e4','#e2e8f0'], borderWidth: 2 }]
-    },
-    options: {
-      responsive: true, cutout: '60%',
-      plugins: { legend: { position: 'right', labels: { font: { family: fontFamily, size: 11 }, boxWidth: 12 } } }
-    }
-  });
-
-  // TREEMAP (CSS blocks)
-  const brands = [
-    { name: 'HP', pct: 43, color: '#1a2744' },
-    { name: 'DELL', pct: 37, color: '#2a9d8f' },
-    { name: 'LENOVO', pct: 16, color: '#e9c46a', textColor: '#333' },
-    { name: 'ASUS', pct: 2, color: '#94b8c8' },
-    { name: 'ACER', pct: 2, color: '#c8d8e4', textColor: '#333' },
-  ];
-  const tm = document.getElementById('treemap');
-  brands.forEach(b => {
-    const el = document.createElement('div');
-    el.className = 'tm-block';
-    el.style.cssText = `flex: ${b.pct}; background:${b.color}; color:${b.textColor||'#fff'}; min-width:${b.pct*2}px;`;
-    el.innerHTML = `<span>${b.name}</span><small>${b.pct}%</small>`;
-    tm.appendChild(el);
-  });
-
-  // REGION BAR
-  new Chart(document.getElementById('regionBar'), {
-    type: 'bar',
-    data: {
-      labels: ['EC','NW','NE','LA','MW','SE','SD','BA','BD','TE'],
-      datasets: [{
-        label: 'Total Sales ($M)',
-        data: [215, 82, 74, 68, 61, 54, 22, 18, 15, 12],
-        backgroundColor: ['#1a2744','#2a9d8f','#2a9d8f','#2a9d8f','#2a9d8f','#2a9d8f','#94b8c8','#94b8c8','#94b8c8','#94b8c8'],
-        borderRadius: 5
-      }]
-    },
-    options: {
-      responsive: true, plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { family: fontFamily } } },
-        y: { grid: { color: gridColor }, ticks: { font: { family: fontFamily }, callback: v => '$'+v+'M' } }
-      }
-    }
-  });
-
-  // REMOVAL CHART (dual-axis style with negative refunds)
-  new Chart(document.getElementById('removalChart'), {
-    type: 'bar',
-    data: {
-      labels: ['HP 15-CS1063CL','HP 132 WN71','HP PAV 15-F','LENOVO FLEx9','LENOVO TXG55'],
-      datasets: [
-        { label: 'Sales Qty', data: [10, 5, 5, 28, 28], backgroundColor: '#2a9d8f', borderRadius: [4,4,0,0] },
-        { label: 'Refund Qty', data: [-2, -4, -3, -3, -2], backgroundColor: '#e9c46a', borderRadius: [0,0,4,4] }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { family: fontFamily, size: 11 } } },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${Math.abs(ctx.parsed.y)}` } }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { family: fontFamily, size: 10 } } },
-        y: { grid: { color: gridColor }, ticks: { font: { family: fontFamily }, callback: v => Math.abs(v) } }
-      }
-    }
-  });
-</script>
 </body>
 </html>
