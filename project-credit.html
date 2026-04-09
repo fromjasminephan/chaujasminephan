@@ -1,139 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>German Bank Credit Risk — Jasmine Phan</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--ink:#1a1814;--ink-mid:#4a4640;--ink-light:#8a8480;--cream:#f5f2ec;--accent:#c85c38;--accent-light:#f0d4c8;--teal:#2a6b64;--teal-light:#d0e8e6;--purple:#5540c0;--purple-light:#e8e4f8;--green-light:#d8f0e0;--green:#1a5e32;--rule:rgba(26,24,20,0.10);--sans:'DM Sans',sans-serif;--serif:'DM Serif Display',serif;}
-body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.7;font-size:16px;}
-nav{background:var(--cream);border-bottom:1px solid var(--rule);padding:0 clamp(1.5rem,6vw,5rem);display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-.logo{font-family:var(--serif);font-size:1.05rem;text-decoration:none;color:var(--ink);}
-.back-link{display:flex;align-items:center;gap:0.5rem;text-decoration:none;color:var(--ink-mid);font-size:0.85rem;transition:color 0.2s;}
-.back-link:hover{color:var(--accent);}
-.page{max-width:900px;margin:0 auto;padding:3rem clamp(1.5rem,6vw,3rem) 5rem;}
-.tag-row{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.25rem;}
-.tag{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;padding:0.22rem 0.65rem;border-radius:100px;font-weight:500;}
-.tag-teal{background:var(--teal-light);color:var(--teal);}
-.tag-purple{background:var(--purple-light);color:var(--purple);}
-.tag-green{background:var(--green-light);color:var(--green);}
-h1{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);line-height:1.2;margin-bottom:0.5rem;}
-.meta{font-size:0.88rem;color:var(--ink-light);margin-bottom:2.5rem;display:flex;gap:1.5rem;flex-wrap:wrap;}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:3rem;}
-.stat-box{background:white;border:1px solid var(--rule);border-radius:10px;padding:1.25rem;text-align:center;}
-.stat-box .num{font-family:var(--serif);font-size:1.6rem;color:var(--accent);display:block;}
-.stat-box .lbl{font-size:0.7rem;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.07em;margin-top:0.2rem;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-bottom:3rem;}
-.section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
-.section p{font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
-.section ul{padding-left:1.1rem;font-size:0.92rem;color:var(--ink-mid);font-weight:300;line-height:1.85;}
-.section ul li{margin-bottom:0.3rem;}
-.divider{border:none;border-top:1px solid var(--rule);margin:2.5rem 0;}
-.full-section{margin-bottom:2.5rem;}
-.full-section h2{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.75rem;}
-.tech-list{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.75rem;}
-.chip{background:white;border:1px solid var(--rule);padding:0.28rem 0.75rem;border-radius:4px;font-size:0.8rem;color:var(--ink-mid);}
-.dash-section{margin-top:3rem;}
-.dash-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-light);margin-bottom:0.75rem;}
-.dash-title{font-family:var(--serif);font-size:1.3rem;margin-bottom:0.5rem;}
-.dash-sub{font-size:0.85rem;color:var(--ink-mid);font-weight:300;margin-bottom:1.25rem;}
-.browser-bar{background:#1a1814;padding:0.55rem 1rem;display:flex;align-items:center;gap:0.5rem;border-radius:10px 10px 0 0;}
-.dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
-.browser-file{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-left:0.75rem;}
-.iframe-wrap{border:1px solid var(--rule);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
-@media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.two-col{grid-template-columns:1fr;}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>D24 Sales Analysis – Jasmine Phan</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --navy: #1a2744;
+      --teal: #2a9d8f;
+      --teal-light: #e8f5f3;
+      --gold: #e9c46a;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --white: #ffffff;
+      --bg: #f8fafc;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--navy);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    nav a.back {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    nav a.back:hover { color: var(--gold); }
+    nav .nav-brand {
+      color: var(--white);
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #243b6e 60%, #1a3a5c 100%);
+      color: var(--white);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(42,157,143,0.15);
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(233,196,106,0.1);
+    }
+    .hero-tag {
+      display: inline-block;
+      background: rgba(42,157,143,0.25);
+      border: 1px solid rgba(42,157,143,0.5);
+      color: #5fdec9;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.2;
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem 1.5rem;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 2.5rem;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 0.3rem; }
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .stat-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 0.7rem 1.4rem;
+      text-align: center;
+    }
+    .stat-pill .num {
+      display: block;
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+    }
+    .stat-pill .lbl {
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 0.5rem;
+    }
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.9rem;
+      font-weight: 400;
+      color: var(--navy);
+      margin-bottom: 1.2rem;
+    }
+    p { color: var(--muted); margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* TAGS */
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.2rem;
+    }
+    .tag {
+      background: var(--teal-light);
+      color: var(--teal);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+    }
+    .tag.navy {
+      background: #e8edf5;
+      color: var(--navy);
+    }
+
+    /* TWO-COL */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 680px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* CARD */
+    .card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 1.8rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
+    .card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--navy);
+      margin-bottom: 0.6rem;
+    }
+
+    /* FINDINGS GRID */
+    .findings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1.5rem;
+    }
+    .finding-card {
+      background: var(--white);
+      border-radius: 12px;
+      padding: 1.4rem;
+      border-left: 4px solid var(--teal);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .finding-card.gold { border-left-color: var(--gold); }
+    .finding-card.navy { border-left-color: var(--navy); }
+    .finding-card h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--teal);
+      margin-bottom: 0.4rem;
+    }
+    .finding-card.gold h4 { color: #c9960a; }
+    .finding-card.navy h4 { color: var(--navy); }
+    .finding-card p { font-size: 0.9rem; margin: 0; }
+
+    /* CHARTS */
+    .chart-wrapper {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 1.8rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+      margin-top: 1.5rem;
+    }
+    .chart-wrapper h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    canvas { max-height: 280px; }
+
+    /* DASHBOARD BTN */
+    .cta-box {
+      background: linear-gradient(135deg, var(--navy), #243b6e);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--white);
+      margin-top: 2rem;
+    }
+    .cta-box h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+    }
+    .cta-box p { color: rgba(255,255,255,0.65); margin-bottom: 1.5rem; font-size: 0.9rem; }
+    .btn-gold {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .btn-gold:hover { opacity: 0.85; }
+
+    /* PROCESS STEPS */
+    .process-list {
+      list-style: none;
+      counter-reset: step;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .process-list li {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: var(--white);
+      padding: 1.2rem 1.4rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .process-list li::before {
+      content: counter(step, decimal-leading-zero);
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: var(--teal);
+      flex-shrink: 0;
+      line-height: 1;
+      padding-top: 2px;
+    }
+    .process-list li strong { display: block; color: var(--navy); font-size: 0.95rem; margin-bottom: 0.2rem; }
+    .process-list li span { font-size: 0.875rem; color: var(--muted); }
+  </style>
 </head>
 <body>
+
 <nav>
-  <a href="index.html" class="logo">Jasmine Chau</a>
-  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <a href="index.html" class="back">← Back to Portfolio</a>
+  <span class="nav-brand">Jasmine Phan</span>
 </nav>
-<div class="page">
-  <div class="tag-row">
-    <span class="tag tag-green">Clustering</span>
-    <span class="tag tag-teal">Classification</span>
-    <span class="tag tag-purple">Group Project · 2025</span>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Data Analytics · Visualization</div>
+  <h1>Analysis of D24 Sales Data</h1>
+  <div class="hero-meta">
+    <span>📚 ALY 6070 – Communication & Visualization for Data Analytics</span>
+    <span>🏛 Northeastern University, Seattle</span>
+    <span>📅 March 2025</span>
   </div>
-  <h1>German Bank Credit Risk &amp; Customer Segmentation</h1>
-  <div class="meta">
-    <span>📅 Completed: May 2025</span>
-    <span>🏢 Northeastern University ALY6080</span>
-    <span>👥 Team of 5</span>
-    <span>📊 1,000 records</span>
-  </div>
-
-  <div class="stats">
-    <div class="stat-box"><span class="num">1,000</span><span class="lbl">Applicant records</span></div>
-    <div class="stat-box"><span class="num">3</span><span class="lbl">Customer segments</span></div>
-    <div class="stat-box"><span class="num">79%</span><span class="lbl">SVM accuracy</span></div>
-  </div>
-
-  <div class="two-col">
-    <div class="section">
-      <h2>Business problem</h2>
-      <p>Banks struggle to evaluate loan applicants with no prior credit history — standard scoring models fail entirely when there's no credit track record. This project asked: can behavioral and demographic features alone predict default risk? And how can customers be segmented to enable tailored, data-driven lending strategies?</p>
+  <div class="stats-row">
+    <div class="stat-pill">
+      <span class="num">19</span>
+      <span class="lbl">Brands Identified</span>
     </div>
-    <div class="section">
-      <h2>What we built</h2>
-      <ul>
-        <li>K-means clustering (k=3) to segment customers into distinct borrower profiles</li>
-        <li>PCA for dimensionality reduction — 90% variance retained</li>
-        <li>Engineered a 3-tier risk label (Low/Medium/High) based on financial indicators</li>
-        <li>SVM classifier with linear kernel — 79% accuracy vs 49% with RBF kernel</li>
-        <li>Bivariate analysis across purpose, housing, job type, age, and duration</li>
-      </ul>
+    <div class="stat-pill">
+      <span class="num">96%</span>
+      <span class="lbl">Top 3 Brand Share</span>
     </div>
-  </div>
-
-  <hr class="divider"/>
-
-  <div class="two-col">
-    <div class="section">
-      <h2>Customer segments</h2>
-      <ul>
-        <li><strong>Cluster 0 — Asset-Heavy Mature Borrowers:</strong> Avg age 42, avg loan 6,342 DM, 31+ month terms. Best candidates for secured lending and auto loans.</li>
-        <li><strong>Cluster 1 — Young Independent Starters:</strong> Avg age 32, smaller loans ~2,584 DM, shorter terms. Ideal for first-time borrower programs.</li>
-        <li><strong>Cluster 2 — Balanced Mid-Age Homeowners:</strong> Avg age 36, 88% own homes. Suited for cross-selling and bundled financial products.</li>
-      </ul>
+    <div class="stat-pill">
+      <span class="num">$200M+</span>
+      <span class="lbl">EC Region Revenue</span>
     </div>
-    <div class="section">
-      <h2>Key findings</h2>
-      <ul>
-        <li>Savings and checking account status are strongest negative correlators with default risk</li>
-        <li>Job type shows virtually no correlation once other features controlled</li>
-        <li>Silhouette score 0.212, ARI 0.812 — clusters are stable and well-separated</li>
-        <li>All VIF values below 5 — no multicollinearity in the feature set</li>
-        <li>Switching from RBF to linear kernel: +30 percentage point accuracy improvement</li>
-      </ul>
-    </div>
-  </div>
-
-  <hr class="divider"/>
-
-  <div class="full-section">
-    <h2>Technical stack</h2>
-    <div class="tech-list">
-      <span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">K-Means</span><span class="chip">SVM (SVC)</span><span class="chip">PCA</span><span class="chip">pandas</span><span class="chip">matplotlib</span><span class="chip">Tableau</span><span class="chip">statsmodels</span>
-    </div>
-  </div>
-
-  <div class="dash-section">
-    <div class="dash-label">Interactive dashboard</div>
-    <h2 class="dash-title">Credit Risk Analysis Dashboard</h2>
-    <p class="dash-sub">Explore customer segments, risk distribution, SVM performance, and feature correlations.</p>
-    <div class="browser-bar">
-      <span class="dot" style="background:#ff5f57;"></span>
-      <span class="dot" style="background:#febc2e;"></span>
-      <span class="dot" style="background:#28c840;"></span>
-      <span class="browser-file">german_credit_dashboard.html</span>
-    </div>
-    <div class="iframe-wrap">
-      <iframe src="german_credit_dashboard.html" style="width:100%;height:800px;border:none;display:block;" loading="lazy"></iframe>
+    <div class="stat-pill">
+      <span class="num">5</span>
+      <span class="lbl">Items Flagged for Removal</span>
     </div>
   </div>
 </div>
+
+<!-- OVERVIEW -->
+<div class="container">
+  <section>
+    <div class="section-label">Overview</div>
+    <h2>Project Background</h2>
+    <p>This group project analyzed a large retail sales dataset (D24) for a warehouse-style store, covering transactions across multiple geographic regions, brands, and product categories. As part of ALY 6070, the team cleaned, enriched, and visualized the data to uncover actionable insights for inventory and sales strategy.</p>
+    <p>Working as part of <strong>Team Cole N. Knaflic</strong> alongside Chujie Feng, Tsz Chi Leung, and Chenye Yin, I contributed to data preparation, Python-based analysis, correlation studies, and the brand-level refund visualization.</p>
+    <div class="tag-row">
+      <span class="tag">Python</span>
+      <span class="tag">Tableau</span>
+      <span class="tag">Pandas</span>
+      <span class="tag">Matplotlib</span>
+      <span class="tag navy">Chi-Square Testing</span>
+      <span class="tag navy">Cramér's V</span>
+      <span class="tag navy">Retail Analytics</span>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section>
+    <div class="section-label">Methodology</div>
+    <h2>Approach & Process</h2>
+    <ul class="process-list">
+      <li>
+        <strong>Data Cleaning & Enrichment</strong>
+        <span>Standardized date formats, engineered three new features — BRAND, CATEGORY, and Owner — extracted from item description columns and supplemented by public brand data.</span>
+      </li>
+      <li>
+        <strong>Exploratory Analysis (Part 1)</strong>
+        <span>Correlation heatmap, time-series sales trend analysis, and regional revenue breakdown using Python and Tableau visualizations.</span>
+      </li>
+      <li>
+        <strong>Brand & Geographic Analysis (Part 2)</strong>
+        <span>Chi-square tests + Cramér's V to assess brand-geography associations across STATE, CITY, DISTRICT, and LCNAME. Dashboard built in Tableau with treemap + map views.</span>
+      </li>
+      <li>
+        <strong>Inventory Scoring Model</strong>
+        <span>Multi-factor removal score calculated per item: weighted scores for return rate (20%–50% threshold), unit price, and sales quantity — visualized in a dual-axis Tableau bar chart.</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- KEY FINDINGS -->
+  <section>
+    <div class="section-label">Key Findings</div>
+    <h2>What the Data Revealed</h2>
+    <div class="findings-grid">
+      <div class="finding-card">
+        <h4>Sales & Quantity Correlation</h4>
+        <p>Strong positive correlation (r = 0.79) between sales quantity and revenue — expected in retail, but confirmed data integrity for downstream analysis.</p>
+      </div>
+      <div class="finding-card gold">
+        <h4>Seasonal Peak — Nov 2018</h4>
+        <p>A sharp spike in November 2018 aligned with Black Friday/holiday promotions, followed by a smaller February uptick from post-holiday campaigns.</p>
+      </div>
+      <div class="finding-card navy">
+        <h4>EC Region Dominates</h4>
+        <p>The EC region generated $200M+ in revenue, significantly outpacing BD, TE, BA, and SD — pointing to major demographic and purchasing power differences.</p>
+      </div>
+      <div class="finding-card">
+        <h4>Top 3 Brands = 96% of Sales</h4>
+        <p>HP, DELL, and LENOVO collectively captured 96%+ of sales volume while maintaining low refund rates (13.5%, 14.0%, 15.0%). ASUS and ACER showed 20%+ refund rates despite lower volume.</p>
+      </div>
+      <div class="finding-card gold">
+        <h4>Brand-Geography: Weak Effect</h4>
+        <p>Chi-square tests found statistically significant but practically weak correlations (Cramér's V: 0.04–0.065), meaning brand preference is relatively consistent across regions.</p>
+      </div>
+      <div class="finding-card navy">
+        <h4>5 Items Recommended for Removal</h4>
+        <p>Structured scoring across return rate, unit price, and sales quantity identified HP, DELL, and LENOVO items that underperformed on multiple dimensions simultaneously.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHARTS -->
+  <section>
+    <div class="section-label">Visualizations</div>
+    <h2>Interactive Charts</h2>
+    <div class="two-col">
+      <div class="chart-wrapper">
+        <h3>Top 5 Brands — Sales vs. Refund Ratio</h3>
+        <canvas id="brandChart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <h3>Sales Trend Over Time (Sep 2018 – Mar 2019)</h3>
+        <canvas id="trendChart"></canvas>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="margin-top:1.5rem">
+      <h3>Total Sales by Region</h3>
+      <canvas id="regionChart"></canvas>
+    </div>
+  </section>
+
+  <!-- DASHBOARD CTA -->
+  <section style="border-bottom:none;">
+    <div class="cta-box">
+      <h3>Explore the Full Dashboard</h3>
+      <p>Interactive Tableau-style dashboard with brand treemap, geographic distribution maps, and the removal scoring visualization.</p>
+      <a href="german_credit_dashboard.html" class="btn-gold">Open Dashboard →</a>
+    </div>
+  </section>
+</div>
+
+<script>
+  // Brand chart
+  new Chart(document.getElementById('brandChart'), {
+    type: 'bar',
+    data: {
+      labels: ['HP', 'DELL', 'LENOVO', 'ASUS', 'ACER'],
+      datasets: [
+        {
+          label: 'Completed Sales',
+          data: [301725, 261420, 112380, 28450, 26890],
+          backgroundColor: '#2a9d8f',
+          borderRadius: 4,
+        },
+        {
+          label: 'Refunded Sales',
+          data: [40733, 36599, 16857, 5747, 5512],
+          backgroundColor: '#e9c46a',
+          borderRadius: 4,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 } } },
+        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString()}` } }
+      },
+      scales: {
+        x: { stacked: false, grid: { display: false }, ticks: { font: { family: 'DM Sans' } } },
+        y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'DM Sans' }, callback: v => v >= 1000 ? (v/1000)+'k' : v } }
+      }
+    }
+  });
+
+  // Trend chart
+  new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: ['Sep \'18', 'Oct \'18', 'Nov \'18', 'Dec \'18', 'Jan \'19', 'Feb \'19', 'Mar \'19'],
+      datasets: [{
+        label: 'Sales ($)',
+        data: [42, 38, 142, 81, 47, 59, 38],
+        borderColor: '#2a9d8f',
+        backgroundColor: 'rgba(42,157,143,0.08)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#2a9d8f',
+        pointRadius: 5,
+        fill: true,
+        tension: 0.35,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `$${ctx.parsed.y}M` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Sans' } } },
+        y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'DM Sans' }, callback: v => '$'+v+'M' } }
+      }
+    }
+  });
+
+  // Region chart
+  new Chart(document.getElementById('regionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['EC', 'NW', 'NE', 'LA', 'MW', 'SE', 'SD', 'BA', 'BD', 'TE'],
+      datasets: [{
+        label: 'Total Sales ($M)',
+        data: [215, 82, 74, 68, 61, 54, 22, 18, 15, 12],
+        backgroundColor: (ctx) => {
+          const colors = ['#1a2744','#2a9d8f','#2a9d8f','#2a9d8f','#2a9d8f','#2a9d8f','#94b8c8','#94b8c8','#94b8c8','#94b8c8'];
+          return colors[ctx.dataIndex];
+        },
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => `$${ctx.parsed.y}M` } }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'DM Sans' } } },
+        y: { grid: { color: '#f1f5f9' }, ticks: { font: { family: 'DM Sans' }, callback: v => '$'+v+'M' } }
+      }
+    }
+  });
+</script>
 </body>
 </html>
