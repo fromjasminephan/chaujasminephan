@@ -315,21 +315,21 @@ footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.07);text-al
         </div>
       </div>
 
-      <!-- Card 3: German Credit -->
+      <!-- Card 3: D24 Sales -->
       <div class="project-card" onclick="window.location.href='project-credit.html'">
         <div class="card-viz" style="background:#0d2018;">
           <canvas id="viz3"></canvas>
           <span class="card-num">03</span>
           <div class="card-viz-overlay">
-            <div class="card-tags"><span class="card-tag">Clustering</span><span class="card-tag">Classification</span></div>
+            <div class="card-tags"><span class="card-tag">Data Visualization</span><span class="card-tag">Retail Analytics</span></div>
           </div>
         </div>
         <div class="card-body">
-          <h3>German Bank Credit Risk &amp; Customer Segmentation</h3>
-          <p>Segmented 1,000 bank customers into 3 borrower profiles using K-means, then built an SVM classifier with 79% accuracy.</p>
+          <h3>Analysis of D24 Sales Data</h3>
+          <p>Uncovered seasonal trends, regional disparities, and brand performance insights across 19 brands — with a scoring model to identify the top 5 items for inventory removal.</p>
         </div>
         <div class="card-footer">
-          <span class="card-tools">Python · K-Means · SVM · PCA</span>
+          <span class="card-tools">Python · Tableau · Chi-Square · Matplotlib</span>
           <span class="card-arrow">View details →</span>
         </div>
       </div>
@@ -433,11 +433,14 @@ new Chart(document.getElementById('viz2'),{type:'bar',data:{
   datasets:[{data:[99.7,54.9,51.8,28.2,14.5,14.4,12.4,3.5],backgroundColor:['rgba(94,200,135,0.8)','rgba(94,200,135,0.65)','rgba(94,200,135,0.65)','rgba(245,200,66,0.7)','rgba(242,139,130,0.65)','rgba(242,139,130,0.65)','rgba(242,139,130,0.65)','rgba(242,139,130,0.85)'],borderRadius:4,borderSkipped:false}]
 },{options:{...baseOpts,indexAxis:'y',scales:{x:{grid:{color:dkGrid.color},ticks:dkTick,border:{color:'transparent'},max:110},y:{grid:{display:false},ticks:dkTick,border:{color:'transparent'}}},layout:{padding:{top:10,bottom:10,left:8,right:16}}}});
 
-// Viz 3 — German Credit: risk donut
-new Chart(document.getElementById('viz3'),{type:'doughnut',data:{
-  labels:['Low','Medium','High'],
-  datasets:[{data:[398,587,15],backgroundColor:['rgba(62,207,142,0.8)','rgba(245,166,35,0.8)','rgba(232,92,92,0.8)'],borderColor:'transparent',borderWidth:0,hoverOffset:4}]
-},{options:{...baseOpts,cutout:'62%',layout:{padding:20}}});
+// Viz 3 — D24 Sales: top 5 brands bar
+new Chart(document.getElementById('viz3'),{type:'bar',data:{
+  labels:['HP','DELL','LENOVO','ASUS','ACER'],
+  datasets:[
+    {data:[302,261,112,28,27],backgroundColor:'rgba(42,157,143,0.75)',borderRadius:4,borderSkipped:false,label:'Sales'},
+    {data:[41,37,17,6,6],backgroundColor:'rgba(233,196,106,0.75)',borderRadius:4,borderSkipped:false,label:'Refunds'}
+  ]
+},{options:{...baseOpts,scales:{x:{grid:{color:dkGrid.color},ticks:dkTick,border:{color:'transparent'}},y:{grid:{color:dkGrid.color},ticks:{...dkTick,callback:v=>v+'k'},border:{color:'transparent'}}},layout:{padding:{top:20,bottom:10,left:12,right:12}}}});
 
 // Viz 4 — World Happiness: trend lines by cluster
 new Chart(document.getElementById('viz4'),{type:'line',data:{
